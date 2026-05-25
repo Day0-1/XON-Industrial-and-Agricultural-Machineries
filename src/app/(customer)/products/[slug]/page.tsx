@@ -6,12 +6,10 @@ import { ProductDetailGallery } from "@/components/customer/products/ProductDeta
 import { ProductDetailTabs } from "@/components/customer/products/ProductDetailTabs";
 import { ProductsHelpBox } from "@/components/customer/products/ProductsHelpBox";
 import { FadeIn } from "@/components/customer/FadeIn";
+import { ProductViewTracker } from "@/components/customer/products/ProductViewTracker";
 import { ProductJsonLd } from "@/components/seo/ProductJsonLd";
 import { getProductBySlug } from "@/integrations/mongodb/products";
-import {
-  getDefaultProductFeatures,
-  productCategoryLabels,
-} from "@/lib/site/products";
+import { getProductFeatures } from "@/lib/site/products";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import {
   buildProductInquiryMessage,
@@ -36,7 +34,7 @@ export async function generateMetadata({ params }: Params) {
     title: product.name,
     description: product.description.slice(0, 160),
     path: `/products/${slug}`,
-    image: product.imageUrl,
+    image: product.images[0]?.imageUrl ?? product.imageUrl,
     imageAlt: product.name,
   });
 }
@@ -46,8 +44,8 @@ export default async function ProductDetailPage({ params }: Params) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const categoryLabel = productCategoryLabels[product.category];
-  const features = getDefaultProductFeatures(product.category);
+  const categoryLabel = product.collectionName;
+  const features = getProductFeatures(product);
   const summary =
     product.description.length > 220
       ? `${product.description.slice(0, 220).trim()}…`
@@ -63,6 +61,7 @@ export default async function ProductDetailPage({ params }: Params) {
     <div className="bg-white">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:py-14">
         <ProductJsonLd product={product} />
+        <ProductViewTracker slug={product.slug} />
         <FadeIn>
           <ProductBreadcrumbs
             items={[
@@ -70,7 +69,7 @@ export default async function ProductDetailPage({ params }: Params) {
               { label: "Products", href: "/products" },
               {
                 label: categoryLabel,
-                href: `/products?category=${product.category}`,
+                href: `/products?category=${product.collectionSlug}`,
               },
               { label: product.name },
             ]}
@@ -79,10 +78,7 @@ export default async function ProductDetailPage({ params }: Params) {
 
         <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-14">
           <FadeIn delay={0.05}>
-            <ProductDetailGallery
-              imageUrl={product.imageUrl}
-              alt={product.name}
-            />
+            <ProductDetailGallery images={product.images} alt={product.name} />
           </FadeIn>
 
           <FadeIn delay={0.1}>

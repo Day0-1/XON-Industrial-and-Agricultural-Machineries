@@ -1,10 +1,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FadeIn } from "@/components/customer/FadeIn";
-import { featuredCategories } from "@/lib/site/brand";
 import { SectionHeading } from "./SectionHeading";
 
-export function FeaturedProductsSection() {
+export type FeaturedCategoryLink = {
+  name: string;
+  href: string;
+  image: string;
+};
+
+type FeaturedProductsSectionProps = {
+  categories: FeaturedCategoryLink[];
+};
+
+export function FeaturedProductsSection({
+  categories,
+}: FeaturedProductsSectionProps) {
+  if (categories.length === 0) {
+    return null;
+  }
+
   return (
     <section className="bg-white py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4">
@@ -17,12 +32,12 @@ export function FeaturedProductsSection() {
         </FadeIn>
 
         <ul className="mx-auto mt-14 grid w-full max-w-xs grid-cols-2 place-items-center gap-x-10 gap-y-10 sm:max-w-2xl sm:grid-cols-3 sm:gap-x-12 sm:gap-y-12 lg:max-w-none lg:grid-cols-5 lg:gap-x-4 lg:gap-y-0 xl:gap-x-8">
-          {featuredCategories.map((category, index) => (
+          {categories.map((category, index) => (
             <FadeIn
-              key={category.name}
+              key={category.href}
               delay={index * 0.06}
               className={
-                index === featuredCategories.length - 1
+                index === categories.length - 1 && categories.length % 2 === 1
                   ? "col-span-2 sm:col-span-1"
                   : "w-full"
               }

@@ -1,14 +1,16 @@
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { listAllCollections } from "@/integrations/mongodb/collections";
 
-export default function NewProductPage() {
+export default async function NewProductPage() {
+  const collections = await listAllCollections();
+
   return (
-    <div>
-      <h1 className="text-2xl font-semibold text-zinc-950 dark:text-zinc-50">
-        New product
-      </h1>
-      <div className="mt-8">
-        <ProductForm />
+    <>
+      <AdminPageHeader title="New product" description="Add an item to the catalog" />
+      <div className="rounded-[28px] bg-white p-6 shadow-[0_8px_40px_-12px_rgba(15,23,42,0.08)] sm:p-8">
+        <ProductForm collections={collections} />
       </div>
-    </div>
+    </>
   );
 }

@@ -1,6 +1,12 @@
 import Image from "next/image";
 import { FadeIn } from "@/components/customer/FadeIn";
 import { aboutImages } from "@/lib/site/about";
+import {
+  companyMission,
+  companyMotto,
+  companyVision,
+  yearsOfExperience,
+} from "@/lib/site/company";
 import { SectionHeading } from "@/components/customer/home/SectionHeading";
 
 export function AboutStorySection() {
@@ -12,7 +18,7 @@ export function AboutStorySection() {
             align="left"
             eyebrow="Our story"
             title="From supply to partnership"
-            description="XON began with a simple belief: buying machinery should not feel opaque or risky."
+            description={`${yearsOfExperience} years of experience supplying machinery across Nigeria—with a commitment to quality, partnership, and support.`}
           />
         </FadeIn>
 
@@ -29,11 +35,10 @@ export function AboutStorySection() {
             </div>
             <blockquote className="mt-8 border-l-4 border-brand pl-6">
               <p className="text-lg font-medium leading-relaxed text-slate-800">
-                &ldquo;We sell machines, but our work is really about helping
-                operators make confident decisions.&rdquo;
+                &ldquo;{companyMotto}&rdquo;
               </p>
               <footer className="mt-3 text-sm text-slate-500">
-                — The XON team
+                — XON motto
               </footer>
             </blockquote>
           </FadeIn>
@@ -43,9 +48,10 @@ export function AboutStorySection() {
               <p>
                 XON Industrial and Agricultural Machineries was established to
                 serve two worlds that share the same demand for reliability:
-                factory floors and farmland. Over more than a decade, we have
-                supplied generators, processing equipment, workshop tools, and
-                farm machinery to clients who cannot afford downtime.
+                factory floors and farmland. With {yearsOfExperience} years of
+                experience, we have supplied generators, processing equipment,
+                workshop tools, and farm machinery to clients who cannot afford
+                downtime.
               </p>
               <p>
                 Early on we saw a gap in the market—buyers were quoted over the
@@ -71,9 +77,7 @@ export function AboutStorySection() {
                   Mission
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                  Make quality industrial and agricultural machinery accessible
-                  through honest communication and a straightforward inquiry
-                  process.
+                  {companyMission}
                 </p>
               </div>
               <div className="rounded-2xl bg-brand/5 p-6 ring-1 ring-brand/10">
@@ -81,8 +85,7 @@ export function AboutStorySection() {
                   Vision
                 </p>
                 <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                  Become the most trusted machinery partner in our region—known
-                  for equipment that performs and support that answers.
+                  {companyVision}
                 </p>
               </div>
             </div>

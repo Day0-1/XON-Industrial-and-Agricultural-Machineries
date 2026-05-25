@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Mail, MessageCircle, Phone } from "lucide-react";
+import { ArrowRight, ArrowUp, Mail, MessageCircle, Phone } from "lucide-react";
 import { WhatsAppLink } from "@/components/customer/WhatsAppLink";
+import { listActiveCollections } from "@/integrations/mongodb/collections";
 import {
   getContactEmail,
   getContactPhone,
@@ -9,16 +9,7 @@ import {
 import { siteConfig } from "@/lib/seo/site";
 import { getWhatsAppHref } from "@/lib/whatsapp";
 
-const footerColumns = [
-  {
-    title: "Products",
-    links: [
-      { href: "/products", label: "All products" },
-      { href: "/products?category=industrial", label: "Industrial" },
-      { href: "/products?category=agricultural", label: "Agricultural" },
-      { href: "/products", label: "Gallery" },
-    ],
-  },
+const staticFooterColumns = [
   {
     title: "Company",
     links: [
@@ -42,6 +33,20 @@ const footerColumns = [
     ],
   },
 ] as const;
+
+const MAX_FOOTER_CATEGORY_LINKS = 5;
+
+function buildProductFooterLinks(
+  collections: Awaited<ReturnType<typeof listActiveCollections>>,
+) {
+  return [
+    { href: "/products", label: "All products" },
+    ...collections.slice(0, MAX_FOOTER_CATEGORY_LINKS).map((col) => ({
+      href: `/products?category=${col.slug}`,
+      label: col.name,
+    })),
+  ];
+}
 
 function FooterColumn({
   title,
@@ -71,7 +76,16 @@ function FooterColumn({
   );
 }
 
-export function CustomerFooter() {
+export async function CustomerFooter() {
+  const collections = await listActiveCollections();
+  const footerColumns = [
+    {
+      title: "Products",
+      links: buildProductFooterLinks(collections),
+    },
+    ...staticFooterColumns,
+  ];
+
   const email = getContactEmail();
   const phone = getContactPhone();
   const whatsappHref = getWhatsAppHref(
@@ -142,18 +156,33 @@ export function CustomerFooter() {
           </div>
         </div>
 
-        <div className="relative mt-12 overflow-hidden py-6">
-          <div
-            className="pointer-events-none flex items-center justify-center select-none"
-            aria-hidden
-          >
-            <Image
-              src="/logo1.jfif"
-              alt=""
-              width={900}
-              height={200}
-              className="h-[300px] w-full max-w-4xl  object-contain grayscale opacity-20"
-            />
+        <div className="mt-12 border-t border-slate-200 pt-8">
+          <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-slate-400">
+            <p>&copy; {year}</p>
+            <a
+              href="#page-top"
+              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-slate-500 transition-colors hover:text-brand"
+            >
+              Back to top
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white">
+                <ArrowUp className="h-4 w-4" aria-hidden />
+              </span>
+            </a>
+          </div>
+
+          <div className="mt-10 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">
+              Need machinery or support?
+            </p>
+            <Link
+              href="/contact"
+              className="mt-3 block text-[clamp(2.75rem,12vw,6.5rem)] font-bold leading-none tracking-tight text-slate-200 transition-colors hover:text-slate-300"
+            >
+              Let&apos;s talk
+            </Link>
+            <p className="mx-auto mt-4 max-w-lg text-sm text-slate-500">
+              {siteConfig.name}
+            </p>
           </div>
         </div>
 

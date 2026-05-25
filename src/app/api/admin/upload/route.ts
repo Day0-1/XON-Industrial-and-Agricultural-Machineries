@@ -20,7 +20,10 @@ export async function POST(request: Request) {
       imageUrl: result.url,
       cloudinaryPublicId: result.publicId,
     });
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Upload error:", err);
+    }
     return jsonError("Image upload failed", 500);
   }
 }

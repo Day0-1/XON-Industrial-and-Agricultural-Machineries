@@ -32,7 +32,7 @@ export function SetupAdminForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Setup failed");
 
-      router.push("/admin/login?created=1");
+      router.push("/login?created=1");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Setup failed");

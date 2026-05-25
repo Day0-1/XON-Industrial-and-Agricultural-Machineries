@@ -1,14 +1,13 @@
 import Link from "next/link";
-import {
-  productCatalogCategories,
-  type CatalogCategoryId,
-} from "@/lib/site/products";
+import type { CatalogNavItem } from "@/lib/site/products";
 
 type ProductsCategorySidebarProps = {
-  activeCategory: CatalogCategoryId;
+  nav: CatalogNavItem[];
+  activeCategory: string;
 };
 
 export function ProductsCategorySidebar({
+  nav,
   activeCategory,
 }: ProductsCategorySidebarProps) {
   return (
@@ -17,7 +16,7 @@ export function ProductsCategorySidebar({
         Categories
       </h2>
       <ul className="mt-4 space-y-0.5">
-        {productCatalogCategories.map((category) => {
+        {nav.map((category) => {
           const isActive = category.id === activeCategory;
 
           return (

@@ -1,4 +1,11 @@
 import { brandImages } from "@/lib/site/brand";
+import { yearsOfExperience } from "@/lib/site/company";
+
+export {
+  companyMission,
+  companyMotto,
+  companyVision,
+} from "@/lib/site/company";
 
 export const aboutImages = {
   hero: brandImages.whyChooseFeatured,
@@ -10,11 +17,13 @@ export const aboutImages = {
 } as const;
 
 export const aboutStats = [
-  { value: "10+", label: "Years in machinery supply" },
-  { value: "100+", label: "Machines delivered" },
+  { value: `${yearsOfExperience}+`, label: "Years of experience" },
   { value: "2", label: "Core sectors served" },
-  { value: "24/7", label: "WhatsApp availability" },
+  { value: "NG", label: "Serving Nigeria" },
+  { value: "24/7", label: "Inquiry support" },
 ] as const;
+
+export const aboutTagline = `With ${yearsOfExperience} years of experience, XON supplies industrial and agricultural machinery across Nigeria—with direct support from inquiry through delivery.`;
 
 export const aboutValues = [
   {

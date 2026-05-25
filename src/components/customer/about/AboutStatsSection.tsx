@@ -1,5 +1,5 @@
 import { FadeIn } from "@/components/customer/FadeIn";
-import { aboutStats } from "@/lib/site/about";
+import { aboutStats, aboutTagline } from "@/lib/site/about";
 
 export function AboutStatsSection() {
   return (
@@ -7,9 +7,7 @@ export function AboutStatsSection() {
       <div className="mx-auto max-w-6xl px-4">
         <FadeIn>
           <p className="mx-auto max-w-3xl text-center text-sm leading-relaxed text-slate-600 sm:text-base">
-            Based in Nigeria, serving businesses, farms, and workshops that need
-            machines they can trust—backed by WhatsApp support from inquiry
-            through delivery.
+            {aboutTagline}
           </p>
         </FadeIn>
         <FadeIn delay={0.06}>

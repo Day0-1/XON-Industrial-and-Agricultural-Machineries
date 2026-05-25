@@ -9,6 +9,7 @@ export function CustomerMain({ children }: { children: ReactNode }) {
 
   return (
     <main
+      id="page-top"
       className={`flex flex-1 flex-col ${isHome ? "" : "pt-[7.25rem]"}`}
     >
       {children}

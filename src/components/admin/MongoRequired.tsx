@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getSiteUrl } from "@/lib/seo/site";
 
 export function MongoRequired() {
   return (
@@ -11,7 +12,7 @@ export function MongoRequired() {
           server, then return to the admin area.
         </p>
         <Link
-          href="/"
+          href={getSiteUrl()}
           className="mt-6 inline-block text-sm font-medium text-zinc-300 hover:text-white"
         >
           Back to website

@@ -35,7 +35,7 @@ export function ProductCard({ product, emphasized = false }: ProductCardProps) {
       </div>
       <div className="flex flex-1 flex-col p-5">
         <p className="text-xs font-semibold uppercase tracking-wide text-brand-light">
-          {product.category}
+          {product.collectionName}
         </p>
         <h3 className="mt-1 text-lg font-semibold text-slate-900">
           {product.name}

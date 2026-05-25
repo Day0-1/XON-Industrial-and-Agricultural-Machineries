@@ -13,6 +13,11 @@ import {
 import { BentoCard } from "@/components/customer/BentoCard";
 import { FadeIn } from "@/components/customer/FadeIn";
 import { brandImages } from "@/lib/site/brand";
+import {
+  companyMission,
+  companyMotto,
+  yearsOfExperience,
+} from "@/lib/site/company";
 import { SectionHeading } from "./SectionHeading";
 
 const galleryTiles = [
@@ -65,7 +70,7 @@ export function BentoIntroSection() {
           <SectionHeading
             eyebrow="About XON"
             title="Built for operators who need machines that deliver"
-            description="From factory floors to farmland—we supply equipment with clear specs, fair pricing, and human support."
+            description={`${yearsOfExperience} years of experience across Nigeria—industrial and agricultural machinery with clear specs, fair pricing, and human support.`}
           />
         </FadeIn>
 
@@ -103,9 +108,7 @@ export function BentoIntroSection() {
               <div>
                 <p className="text-sm font-semibold text-brand">Our mission</p>
                 <p className="mt-4 text-lg leading-relaxed text-slate-700">
-                  Make industrial and agricultural machinery accessible—with
-                  honest communication and a straightforward WhatsApp inquiry
-                  process.
+                  {companyMission}
                 </p>
               </div>
               <Link
@@ -117,9 +120,14 @@ export function BentoIntroSection() {
               </Link>
             </BentoCard>
             <BentoCard className="bg-brand p-8 text-black">
-              <p className="text-4xl font-bold">10+</p>
-              <p className="mt-1 text-sm font-medium text-black/80">
-                Years serving industrial &amp; farm clients
+              <p className="text-sm font-semibold uppercase tracking-wide text-black/70">
+                Our motto
+              </p>
+              <p className="mt-2 text-2xl font-bold leading-snug sm:text-3xl">
+                {companyMotto}
+              </p>
+              <p className="mt-3 text-sm font-medium text-black/80">
+                {yearsOfExperience}+ years serving industrial &amp; farm clients
               </p>
             </BentoCard>
           </FadeIn>

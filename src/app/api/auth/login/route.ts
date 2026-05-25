@@ -35,7 +35,10 @@ export async function POST(request: Request) {
 
     await createSession(admin.username);
     return jsonOk({ ok: true });
-  } catch {
+  } catch (err) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Login error:", err);
+    }
     return jsonError("Login failed", 500);
   }
 }

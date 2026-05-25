@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/customer/FadeIn";
 import { aboutImages } from "@/lib/site/about";
+import { companyMotto } from "@/lib/site/company";
 
 export function AboutHeroSection() {
   return (
@@ -13,14 +14,16 @@ export function AboutHeroSection() {
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-light">
               About XON
             </p>
+            <p className="mt-3 text-base font-semibold italic text-slate-700">
+              Motto: {companyMotto}
+            </p>
             <h1 className="mt-4 text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 sm:text-5xl">
               Machinery partners for industry and agriculture
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-slate-600 sm:text-lg">
-              XON Industrial and Agricultural Machineries connects operators
-              with dependable equipment—and the people who stand behind it. We
-              are built for buyers who value clarity, durability, and direct
-              communication.
+              XON Industrial and Agricultural Machineries connects Nigerian
+              businesses and operators with dependable equipment, comprehensive
+              technical services, and the people who stand behind every sale.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link

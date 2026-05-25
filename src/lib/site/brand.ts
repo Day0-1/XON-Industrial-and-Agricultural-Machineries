@@ -1,3 +1,5 @@
+import { yearsOfExperience } from "@/lib/site/company";
+
 /** Local marketing imagery (files in public/media/). */
 export const brandImages = {
   hero: "/media/photo-hero.avif",
@@ -8,34 +10,16 @@ export const brandImages = {
   whyChooseFeatured: "/media/machine.jpeg",
 } as const;
 
-/** Home featured category circles (links to products). */
-export const featuredCategories = [
-  {
-    name: "Industrial",
-    href: "/products?category=industrial",
-    image: brandImages.galleryIndustrial,
-  },
-  {
-    name: "Agricultural",
-    href: "/products?category=agricultural",
-    image: brandImages.galleryAgricultural,
-  },
-  {
-    name: "Construction",
-    href: "/products",
-    image: brandImages.hero,
-  },
-  {
-    name: "Processing",
-    href: "/products",
-    image: brandImages.intro,
-  },
-  {
-    name: "Heavy Equipment",
-    href: "/products",
-    image: brandImages.galleryIndustrial,
-  },
-] as const;
+/** Fallback image when a collection has no custom artwork. */
+export function getCollectionFeaturedImage(slug: string): string {
+  if (slug.includes("agricultural")) {
+    return brandImages.galleryAgricultural;
+  }
+  if (slug.includes("industrial")) {
+    return brandImages.galleryIndustrial;
+  }
+  return brandImages.hero;
+}
 
 export const whyChooseItems = [
   {
@@ -101,9 +85,9 @@ export const processSteps = [
 ] as const;
 
 export const trustStats = [
-  { value: "100+", label: "Machines Delivered" },
-  { value: "Trusted", label: "By Businesses" },
-  { value: "24/7", label: "WhatsApp Support" },
+  { value: `${yearsOfExperience}+`, label: "Years of Experience" },
+  { value: "2", label: "Sectors Served" },
+  { value: "24/7", label: "Inquiry Support" },
 ] as const;
 
 export const heroTrustBar = [

@@ -1,11 +1,14 @@
 import { jsonError, jsonOk, requireAdmin } from "@/lib/api/http";
-import type { ProductCategory, ProductInput } from "@/types/product";
+import type { ProductInput } from "@/types/product";
+import { getCollectionById } from "@/integrations/mongodb/collections";
 import {
   deleteProduct,
   getProductById,
   updateProduct,
 } from "@/integrations/mongodb/products";
 import { deleteCloudinaryImage } from "@/integrations/cloudinary/upload";
+import { normalizeProductFeatures } from "@/lib/product-features";
+import { parseProductImages } from "@/lib/product-images";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -30,7 +33,7 @@ export async function PATCH(request: Request, { params }: Params) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const input = parsePartialProductInput(body);
+    const input = await parsePartialProductInput(body);
     if (!input) return jsonError("Invalid product data", 400);
 
     const product = await updateProduct(id, input);
@@ -50,9 +53,12 @@ export async function DELETE(_request: Request, { params }: Params) {
     const product = await deleteProduct(id);
     if (!product) return jsonError("Product not found", 404);
 
-    if (product.cloudinaryPublicId) {
+    const publicIds = new Set(
+      product.images.map((img) => img.cloudinaryPublicId),
+    );
+    for (const publicId of publicIds) {
       try {
-        await deleteCloudinaryImage(product.cloudinaryPublicId);
+        await deleteCloudinaryImage(publicId);
       } catch {
         // Product removed from DB even if Cloudinary delete fails
       }
@@ -64,9 +70,9 @@ export async function DELETE(_request: Request, { params }: Params) {
   }
 }
 
-function parsePartialProductInput(
+async function parsePartialProductInput(
   body: unknown,
-): Partial<ProductInput> | null {
+): Promise<Partial<ProductInput> | null> {
   if (!body || typeof body !== "object") return null;
   const data = body as Record<string, unknown>;
   const input: Partial<ProductInput> = {};
@@ -75,15 +81,25 @@ function parsePartialProductInput(
   if (typeof data.description === "string") {
     input.description = data.description.trim();
   }
-  if (data.category === "industrial" || data.category === "agricultural") {
-    input.category = data.category;
+  if (typeof data.collectionId === "string") {
+    const collectionId = data.collectionId.trim();
+    const col = await getCollectionById(collectionId);
+    if (!col) return null;
+    input.collectionId = collectionId;
   }
-  if (typeof data.imageUrl === "string") input.imageUrl = data.imageUrl;
-  if (typeof data.cloudinaryPublicId === "string") {
-    input.cloudinaryPublicId = data.cloudinaryPublicId;
+  if (Array.isArray(data.images)) {
+    const images = parseProductImages(data);
+    if (!images) return null;
+    input.images = images;
   }
   if (typeof data.featured === "boolean") input.featured = data.featured;
   if (typeof data.active === "boolean") input.active = data.active;
+  if (typeof data.clickCount === "number" && Number.isFinite(data.clickCount)) {
+    input.clickCount = Math.max(0, Math.floor(data.clickCount));
+  }
+  if (data.features !== undefined) {
+    input.features = normalizeProductFeatures(data.features);
+  }
 
   return Object.keys(input).length > 0 ? input : null;
 }

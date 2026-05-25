@@ -1,53 +1,67 @@
+import { ContactInfoPanel } from "@/components/customer/contact/ContactInfoPanel";
+import { ContactMessageForm } from "@/components/customer/contact/ContactMessageForm";
+import { FadeIn } from "@/components/customer/FadeIn";
+import { ProductBreadcrumbs } from "@/components/customer/products/ProductBreadcrumbs";
+import { LocationMapEmbed } from "@/components/customer/shared/LocationMapEmbed";
+import { StoreLocationsList } from "@/components/customer/shared/StoreLocationsList";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { getWhatsAppHref } from "@/lib/whatsapp";
 
-import { buildPageMetadata } from "@/lib/seo/metadata";
-
 export const metadata = buildPageMetadata({
-  title: "Contact",
-  description: "Contact XON via email or WhatsApp for product inquiries and orders.",
+  title: "Contact Us",
+  description:
+    "Contact XON at our Lagos stores — Aswani Market, Alaba International, and Arena Shopping Complex. Phone, email, and WhatsApp.",
   path: "/contact",
 });
 
 export default function ContactPage() {
-  const email = process.env.CONTACT_EMAIL ?? "info@xonmachineries.com";
   const whatsappHref = getWhatsAppHref(
     "Hello XON, I would like to get in touch.",
   );
-
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16">
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-        Contact us
-      </h1>
-      <p className="mt-4 text-lg text-slate-600">
-        Reach out for product availability, pricing, and orders. We respond
-        through email and WhatsApp.
-      </p>
+    <div className="bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:py-14">
+        <FadeIn>
+          <ProductBreadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Contact Us" },
+            ]}
+          />
+        </FadeIn>
 
-      <ul className="mt-10 space-y-6">
-        <li className="rounded-xl border border-border p-5">
-          <p className="text-sm font-medium text-slate-500">Email</p>
-          <a
-            href={`mailto:${email}`}
-            className="mt-1 block text-lg font-medium text-brand hover:underline"
-          >
-            {email}
-          </a>
-        </li>
-        {whatsappHref && (
-          <li className="rounded-xl border border-border p-5">
-            <p className="text-sm font-medium text-slate-500">WhatsApp</p>
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1 inline-flex rounded-lg bg-[#25D366] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1da851]"
-            >
-              Open WhatsApp chat
-            </a>
-          </li>
-        )}
-      </ul>
+        <FadeIn delay={0.04}>
+          <h1 className="sr-only">Contact Us</h1>
+        </FadeIn>
+
+        <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
+          <FadeIn delay={0.06} className="lg:col-span-4">
+            <ContactInfoPanel whatsappHref={whatsappHref} />
+          </FadeIn>
+
+          <FadeIn delay={0.1} className="lg:col-span-8">
+            <ContactMessageForm />
+          </FadeIn>
+        </div>
+
+        <FadeIn delay={0.14}>
+          <div className="mt-10 lg:mt-12">
+            <LocationMapEmbed
+              showStoresList={false}
+              minHeightClass="min-h-[320px] sm:min-h-[400px] lg:min-h-[480px]"
+              aspectClass="aspect-[16/10] lg:aspect-[21/9]"
+            />
+            <div className="mt-8 border-t border-slate-100 pt-8">
+              <p className="text-sm font-semibold text-slate-900">
+                All store addresses
+              </p>
+              <div className="mt-4 max-w-2xl">
+                <StoreLocationsList showMapNote />
+              </div>
+            </div>
+          </div>
+        </FadeIn>
+      </div>
     </div>
   );
 }

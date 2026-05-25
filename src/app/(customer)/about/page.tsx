@@ -1,4 +1,5 @@
 import { AboutApproachSection } from "@/components/customer/about/AboutApproachSection";
+import { AboutLocationSection } from "@/components/customer/about/AboutLocationSection";
 import { AboutCtaSection } from "@/components/customer/about/AboutCtaSection";
 import { AboutFocusSection } from "@/components/customer/about/AboutFocusSection";
 import { AboutHeroSection } from "@/components/customer/about/AboutHeroSection";
@@ -11,7 +12,7 @@ import { getWhatsAppHref } from "@/lib/whatsapp";
 export const metadata = buildPageMetadata({
   title: "About",
   description:
-    "Learn about XON Industrial and Agricultural Machineries—our story, values, and how we help businesses and farms source reliable equipment.",
+    "Learn about XON—28+ years supplying industrial and agricultural machinery in Nigeria. Our mission, vision, and motto: Let's keep moving.",
   path: "/about",
 });
 
@@ -28,6 +29,7 @@ export default function AboutPage() {
       <AboutFocusSection />
       <AboutValuesSection />
       <AboutApproachSection />
+      <AboutLocationSection />
       <AboutCtaSection whatsappHref={whatsappHref} />
     </>
   );

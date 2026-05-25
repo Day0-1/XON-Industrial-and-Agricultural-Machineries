@@ -6,7 +6,8 @@ import { BentoIntroSection } from "@/components/customer/home/BentoIntroSection"
 import { ProcessSection } from "@/components/customer/home/ProcessSection";
 import { TrustSection } from "@/components/customer/home/TrustSection";
 import { WhyChooseSection } from "@/components/customer/home/WhyChooseSection";
-import { listActiveProducts } from "@/integrations/mongodb/products";
+import { listActiveCollections } from "@/integrations/mongodb/collections";
+import { getCollectionFeaturedImage } from "@/lib/site/brand";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { getWhatsAppHref } from "@/lib/whatsapp";
 
@@ -21,12 +22,18 @@ export default async function HomePage() {
   const whatsappHref = getWhatsAppHref(
     "Hello XON, I would like to inquire about your machineries.",
   );
+  const collections = await listActiveCollections();
+  const featuredCategories = collections.slice(0, 5).map((col) => ({
+    name: col.name,
+    href: `/products?category=${col.slug}`,
+    image: getCollectionFeaturedImage(col.slug),
+  }));
 
   return (
     <>
       <HeroSection whatsappHref={whatsappHref} />
       <BentoIntroSection />
-      <FeaturedProductsSection />
+      <FeaturedProductsSection categories={featuredCategories} />
       <WhyChooseSection />
       <ProcessSection />
       <TrustSection />

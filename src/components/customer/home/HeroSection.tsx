@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { WhatsAppLink } from "@/components/customer/WhatsAppLink";
 import { brandImages, heroTrustBar } from "@/lib/site/brand";
+import { companyMotto, yearsOfExperience } from "@/lib/site/company";
 
 const trustIcons = {
   shield: Shield,
@@ -46,14 +47,18 @@ export function HeroSection({ whatsappHref }: HeroSectionProps) {
         <div className="mx-auto w-full max-w-6xl px-4 pb-10 pt-28 sm:pb-14 sm:pt-32 lg:pb-20">
           <div className="max-w-2xl">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
-              XON Machineries
+              XON Machineries · {yearsOfExperience}+ years
+            </p>
+            <p className="mt-2 text-base font-semibold italic text-accent">
+              {companyMotto}
             </p>
             <h1 className="mt-4 text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
               Reliable Industrial &amp; Agricultural Machinery Solutions
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-              Quality equipment for farms and industry. Browse our catalog and
-              complete inquiries directly on WhatsApp with our team.
+              Nigeria&apos;s partner for top-tier industrial machinery and
+              technical services. Browse our catalog and inquire on WhatsApp with
+              our team.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link

@@ -11,6 +11,14 @@ export function isMongoConfigured(): boolean {
   return Boolean(process.env.MONGODB_URI?.trim());
 }
 
+function createMongoClient(uri: string): MongoClient {
+  return new MongoClient(uri, {
+    // Fail fast instead of retrying for many minutes (default ~30s × many attempts).
+    serverSelectionTimeoutMS: 10_000,
+    connectTimeoutMS: 10_000,
+  });
+}
+
 async function connectClient(): Promise<MongoClient> {
   const uri = process.env.MONGODB_URI?.trim();
   if (!uri) {
@@ -19,13 +27,13 @@ async function connectClient(): Promise<MongoClient> {
 
   if (process.env.NODE_ENV === "development") {
     if (!global._mongoClientPromise) {
-      global._mongoClientPromise = new MongoClient(uri).connect();
+      global._mongoClientPromise = createMongoClient(uri).connect();
     }
     return global._mongoClientPromise;
   }
 
   if (!clientPromise) {
-    clientPromise = new MongoClient(uri).connect();
+    clientPromise = createMongoClient(uri).connect();
   }
   return clientPromise;
 }

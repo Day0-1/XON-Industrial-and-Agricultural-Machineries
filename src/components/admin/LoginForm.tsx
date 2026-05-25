@@ -3,6 +3,11 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+function safeRedirectPath(from: string | null): string {
+  if (!from || !from.startsWith("/") || from.startsWith("//")) return "/";
+  return from;
+}
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -26,7 +31,7 @@ export function LoginForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Login failed");
 
-      const from = searchParams.get("from") || "/admin";
+      const from = safeRedirectPath(searchParams.get("from"));
       router.push(from);
       router.refresh();
     } catch (err) {

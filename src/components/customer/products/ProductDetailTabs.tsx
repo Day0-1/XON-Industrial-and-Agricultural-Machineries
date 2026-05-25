@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import {
-  getDefaultProductFeatures,
+  getProductFeatures,
   getProductSpecifications,
-  productCategoryLabels,
   productOrderingNotes,
 } from "@/lib/site/products";
 import type { Product } from "@/types/product";
@@ -24,7 +23,7 @@ type ProductDetailTabsProps = {
 
 export function ProductDetailTabs({ product }: ProductDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>("description");
-  const features = getDefaultProductFeatures(product.category);
+  const features = getProductFeatures(product);
   const specifications = getProductSpecifications(product);
 
   return (
@@ -107,7 +106,7 @@ export function ProductDetailTabs({ product }: ProductDetailTabsProps) {
             <p className="text-base text-slate-700">
               Category:{" "}
               <span className="font-semibold text-slate-900">
-                {productCategoryLabels[product.category]}
+                {product.collectionName}
               </span>
             </p>
             <ul className="mt-4 list-disc space-y-2 pl-5">

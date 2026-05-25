@@ -1,72 +1,88 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import type { Product, ProductCategory } from "@/types/product";
+import { useEffect, useState } from "react";
+import {
+  AdminCheckbox,
+  AdminInput,
+  AdminSelect,
+  AdminTextarea,
+  adminButtonPrimaryClass,
+} from "@/components/admin/AdminFields";
+import { CreateCollectionModal } from "@/components/admin/CreateCollectionModal";
+import { ProductFeaturesField } from "@/components/admin/ProductFeaturesField";
+import { ImageDropzone } from "@/components/admin/ImageDropzone";
+import type { Collection } from "@/types/collection";
+import type { Product } from "@/types/product";
+import {
+  productToDraftImages,
+  resolveDraftImages,
+  revokeAllDraftPreviews,
+  type DraftProductImage,
+} from "@/types/product-draft";
 
 type ProductFormProps = {
   product?: Product;
+  collections: Collection[];
 };
 
-export function ProductForm({ product }: ProductFormProps) {
+export function ProductForm({ product, collections }: ProductFormProps) {
   const router = useRouter();
   const isEdit = Boolean(product);
+  const [collectionModalOpen, setCollectionModalOpen] = useState(false);
 
+  const [draftImages, setDraftImages] = useState<DraftProductImage[]>(() =>
+    productToDraftImages(product),
+  );
   const [name, setName] = useState(product?.name ?? "");
   const [description, setDescription] = useState(product?.description ?? "");
-  const [category, setCategory] = useState<ProductCategory>(
-    product?.category ?? "industrial",
+  const [collectionId, setCollectionId] = useState(
+    product?.collectionId ?? collections[0]?._id ?? "",
   );
   const [featured, setFeatured] = useState(product?.featured ?? false);
   const [active, setActive] = useState(product?.active ?? true);
-  const [imageUrl, setImageUrl] = useState(product?.imageUrl ?? "");
-  const [cloudinaryPublicId, setCloudinaryPublicId] = useState(
-    product?.cloudinaryPublicId ?? "",
+  const [clickCount, setClickCount] = useState(
+    product?.clickCount?.toString() ?? "0",
   );
+  const [features, setFeatures] = useState<string[]>(product?.features ?? []);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleImageChange(file: File | null) {
-    if (!file) return;
-    setUploading(true);
-    setError("");
-
-    try {
-      const form = new FormData();
-      form.append("file", file);
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: form,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Upload failed");
-      setImageUrl(data.imageUrl);
-      setCloudinaryPublicId(data.cloudinaryPublicId);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
-    } finally {
-      setUploading(false);
+  useEffect(() => {
+    if (!collectionId && collections[0]) {
+      setCollectionId(collections[0]._id);
     }
-  }
+  }, [collectionId, collections]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setUploading(true);
     setError("");
 
-    const payload = {
-      name,
-      description,
-      category,
-      imageUrl,
-      cloudinaryPublicId,
-      featured,
-      active,
-    };
-
     try {
+      const images = await resolveDraftImages(draftImages);
+      if (images.length === 0) {
+        throw new Error("Add at least one product image.");
+      }
+
+      setUploading(false);
+
+      const payload: Record<string, unknown> = {
+        name,
+        description,
+        collectionId,
+        images,
+        features,
+        featured,
+        active,
+      };
+      if (isEdit) {
+        const parsed = Number.parseInt(clickCount.replace(/,/g, ""), 10);
+        payload.clickCount = Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+      }
+
       const url = isEdit
         ? `/api/admin/products/${product!._id}`
         : "/api/admin/products";
@@ -78,102 +94,129 @@ export function ProductForm({ product }: ProductFormProps) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Save failed");
-      router.push("/admin/products");
+
+      revokeAllDraftPreviews(draftImages);
+      router.push("/products");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     } finally {
+      setUploading(false);
       setSaving(false);
     }
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="max-w-xl space-y-5">
-      {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
-          {error}
-        </p>
-      )}
+  const submitLabel = uploading
+    ? "Uploading images…"
+    : saving
+      ? "Saving product…"
+      : isEdit
+        ? "Update product"
+        : "Create product";
 
-      <div>
-        <label className="mb-1 block text-sm font-medium">Name</label>
-        <input
+  if (collections.length === 0) {
+    return (
+      <>
+        <p className="text-sm text-slate-600">
+          Create a collection before adding products.
+        </p>
+        <button
+          type="button"
+          onClick={() => setCollectionModalOpen(true)}
+          className={`mt-4 ${adminButtonPrimaryClass}`}
+        >
+          Add collection
+        </button>
+        <CreateCollectionModal
+          open={collectionModalOpen}
+          onClose={() => {
+            setCollectionModalOpen(false);
+            router.refresh();
+          }}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <form onSubmit={handleSubmit} className="max-w-2xl space-y-4">
+        {error && (
+          <p className="rounded-2xl bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>
+        )}
+
+        <ImageDropzone items={draftImages} onChange={setDraftImages} />
+
+        <AdminInput
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+          placeholder="Product name"
         />
-      </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium">Description</label>
-        <textarea
+        <AdminTextarea
           required
           rows={4}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+          placeholder="Full product description — specs, use cases, and key details"
         />
-      </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium">Category</label>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value as ProductCategory)}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 dark:border-zinc-700 dark:bg-zinc-950"
+        <ProductFeaturesField features={features} onChange={setFeatures} />
+
+        <AdminSelect
+          required
+          value={collectionId}
+          onChange={(e) => setCollectionId(e.target.value)}
         >
-          <option value="industrial">Industrial</option>
-          <option value="agricultural">Agricultural</option>
-        </select>
-      </div>
+          <option value="" disabled>
+            Select collection
+          </option>
+          {collections.map((col) => (
+            <option key={col._id} value={col._id}>
+              {col.name}
+            </option>
+          ))}
+        </AdminSelect>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium">Image</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => handleImageChange(e.target.files?.[0] ?? null)}
-          className="block w-full text-sm"
-        />
-        {uploading && <p className="mt-1 text-sm text-zinc-500">Uploading…</p>}
-        {imageUrl && (
-          <div className="relative mt-3 h-40 w-full max-w-xs">
-            <Image
-              src={imageUrl}
-              alt="Preview"
-              fill
-              className="rounded-md object-cover"
-            />
-          </div>
-        )}
-      </div>
-
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
+        <AdminCheckbox
           checked={featured}
-          onChange={(e) => setFeatured(e.target.checked)}
+          onChange={setFeatured}
+          label="Featured on homepage"
         />
-        Featured on homepage
-      </label>
 
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
+        <AdminCheckbox
           checked={active}
-          onChange={(e) => setActive(e.target.checked)}
+          onChange={setActive}
+          label="Visible on website"
         />
-        Visible on website
-      </label>
 
-      <button
-        type="submit"
-        disabled={saving || uploading || !imageUrl || !cloudinaryPublicId}
-        className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-white dark:text-zinc-900"
-      >
-        {saving ? "Saving…" : isEdit ? "Update product" : "Create product"}
-      </button>
-    </form>
+        {isEdit && (
+          <AdminInput
+            type="text"
+            inputMode="numeric"
+            value={clickCount}
+            onChange={(e) => setClickCount(e.target.value)}
+            placeholder="Click count — auto-tracked from product page views"
+          />
+        )}
+
+        <button
+          type="submit"
+          disabled={saving || draftImages.length === 0 || !collectionId}
+          className={adminButtonPrimaryClass}
+        >
+          {submitLabel}
+        </button>
+      </form>
+
+      <CreateCollectionModal
+        open={collectionModalOpen}
+        onClose={() => {
+          setCollectionModalOpen(false);
+          router.refresh();
+        }}
+      />
+    </>
   );
 }

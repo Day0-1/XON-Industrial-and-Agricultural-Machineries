@@ -1,46 +1,47 @@
-import type { Product, ProductCategory } from "@/types/product";
+import type { Collection } from "@/types/collection";
+import type { Product } from "@/types/product";
 
-export const productCategoryLabels: Record<ProductCategory, string> = {
-  industrial: "Industrial Machinery",
-  agricultural: "Agricultural Machinery",
+export type CatalogNavItem = {
+  id: string;
+  label: string;
+  href: string;
 };
 
-export const productCatalogCategories = [
-  { id: "all", label: "All Products", href: "/products" },
-  {
-    id: "industrial",
-    label: "Industrial Machinery",
-    href: "/products?category=industrial",
-  },
-  {
-    id: "agricultural",
-    label: "Agricultural Machinery",
-    href: "/products?category=agricultural",
-  },
-] as const;
-
-export type CatalogCategoryId =
-  (typeof productCatalogCategories)[number]["id"];
+export function buildCatalogNav(collections: Collection[]): CatalogNavItem[] {
+  return [
+    { id: "all", label: "All Products", href: "/products" },
+    ...collections.map((col) => ({
+      id: col.slug,
+      label: col.name,
+      href: `/products?category=${col.slug}`,
+    })),
+  ];
+}
 
 export function parseCatalogCategory(
   value: string | undefined,
-): CatalogCategoryId {
-  if (value === "industrial" || value === "agricultural") return value;
-  return "all";
+  validSlugs: string[],
+): string {
+  if (!value || value === "all") return "all";
+  const slug = value.trim().toLowerCase();
+  return validSlugs.includes(slug) ? slug : "all";
 }
 
 export function filterProductsByCategory(
   products: Product[],
-  categoryId: CatalogCategoryId,
+  categoryId: string,
 ): Product[] {
   if (categoryId === "all") return products;
-  return products.filter((product) => product.category === categoryId);
+  return products.filter((product) => product.collectionSlug === categoryId);
 }
 
-export function getDefaultProductFeatures(
-  category: ProductCategory,
-): string[] {
-  if (category === "agricultural") {
+export function getProductFeatures(product: Product): string[] {
+  if (product.features.length > 0) return product.features;
+  return getDefaultProductFeatures(product.collectionSlug);
+}
+
+export function getDefaultProductFeatures(collectionSlug: string): string[] {
+  if (collectionSlug === "agricultural") {
     return [
       "Built for farm and field workloads",
       "Durable construction for daily use",
@@ -61,7 +62,7 @@ export function getProductSpecifications(
   product: Product,
 ): { label: string; value: string }[] {
   return [
-    { label: "Category", value: productCategoryLabels[product.category] },
+    { label: "Collection", value: product.collectionName },
     { label: "Product", value: product.name },
     {
       label: "Availability",
@@ -78,5 +79,5 @@ export const productOrderingNotes = [
   "Orders and payments are arranged directly on WhatsApp — not on this website.",
   "Share your quantity, delivery location, and timeline when you message us.",
   "We respond with current pricing, availability, and next steps.",
-  "Additional photos, manuals, or technical sheets available on request.",
+  "Additional photos, manuals, or technical sheets available on request",
 ];

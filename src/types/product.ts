@@ -1,15 +1,23 @@
-export type ProductCategory = "industrial" | "agricultural";
+export type ProductImage = {
+  imageUrl: string;
+  cloudinaryPublicId: string;
+};
 
 export type Product = {
   _id: string;
   name: string;
   slug: string;
   description: string;
-  category: ProductCategory;
+  collectionId: string;
+  collectionName: string;
+  collectionSlug: string;
+  images: ProductImage[];
   imageUrl: string;
   cloudinaryPublicId: string;
   featured: boolean;
   active: boolean;
+  clickCount: number;
+  features: string[];
   createdAt: string;
   updatedAt: string;
 };
@@ -17,9 +25,12 @@ export type Product = {
 export type ProductInput = {
   name: string;
   description: string;
-  category: ProductCategory;
-  imageUrl: string;
-  cloudinaryPublicId: string;
+  collectionId: string;
+  images: ProductImage[];
+  imageUrl?: string;
+  cloudinaryPublicId?: string;
   featured?: boolean;
   active?: boolean;
+  clickCount?: number;
+  features?: string[];
 };
