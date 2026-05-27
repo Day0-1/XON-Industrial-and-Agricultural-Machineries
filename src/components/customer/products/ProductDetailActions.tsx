@@ -7,12 +7,14 @@ import { buildProductQuoteMessage } from "@/lib/whatsapp";
 
 type ProductDetailActionsProps = {
   productName: string;
+  productSlug: string;
   chatHref: string | null;
   whatsappNumber: string | null;
 };
 
 export function ProductDetailActions({
   productName,
+  productSlug,
   chatHref,
   whatsappNumber,
 }: ProductDetailActionsProps) {
@@ -20,9 +22,13 @@ export function ProductDetailActions({
 
   const quoteHref = useMemo(() => {
     if (!whatsappNumber) return null;
-    const message = buildProductQuoteMessage(productName, quantity);
+    const message = buildProductQuoteMessage(
+      productName,
+      quantity,
+      productSlug,
+    );
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-  }, [productName, quantity, whatsappNumber]);
+  }, [productName, productSlug, quantity, whatsappNumber]);
 
   function decrement() {
     setQuantity((value) => Math.max(1, value - 1));

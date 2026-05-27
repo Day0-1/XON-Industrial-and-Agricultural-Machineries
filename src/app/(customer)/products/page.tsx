@@ -5,6 +5,7 @@ import { ProductsHelpBox } from "@/components/customer/products/ProductsHelpBox"
 import { FadeIn } from "@/components/customer/FadeIn";
 import { ListPagination } from "@/components/shared/ListPagination";
 import { ProductSearchBar } from "@/components/shared/ProductSearchBar";
+import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { listActiveCollections } from "@/integrations/mongodb/collections";
 import { listActiveProductsPaginated } from "@/integrations/mongodb/products";
 import {
@@ -18,17 +19,34 @@ import {
 } from "@/lib/pagination";
 import { parseSearchQuery } from "@/lib/search";
 import { buildPageMetadata } from "@/lib/seo/metadata";
+import { customerPageShellClass } from "@/lib/site/customer-layout";
 import { getWhatsAppHref } from "@/lib/whatsapp";
-
-export const metadata = buildPageMetadata({
-  title: "Products",
-  description: "Browse industrial and agricultural machinery from XON.",
-  path: "/products",
-});
 
 type SearchParams = {
   searchParams: Promise<{ category?: string; page?: string; q?: string }>;
 };
+
+function isCatalogFilterVariant(params: {
+  category?: string;
+  page?: string;
+  q?: string;
+}): boolean {
+  if (params.q?.trim()) return true;
+  if (params.category?.trim()) return true;
+  const page = Number.parseInt(params.page ?? "1", 10);
+  return Number.isFinite(page) && page > 1;
+}
+
+export async function generateMetadata({ searchParams }: SearchParams) {
+  const params = await searchParams;
+
+  return buildPageMetadata({
+    title: "Products",
+    description: "Browse industrial and agricultural machinery from XON.",
+    path: "/products",
+    noIndex: isCatalogFilterVariant(params),
+  });
+}
 
 export default async function ProductsPage({ searchParams }: SearchParams) {
   const { category: categoryParam, page: pageParam, q: qParam } =
@@ -65,7 +83,13 @@ export default async function ProductsPage({ searchParams }: SearchParams) {
 
   return (
     <div className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:py-14">
+      <BreadcrumbJsonLd
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Products", href: "/products" },
+        ]}
+      />
+      <div className={customerPageShellClass}>
         <FadeIn>
           <ProductBreadcrumbs
             items={[
@@ -77,10 +101,10 @@ export default async function ProductsPage({ searchParams }: SearchParams) {
 
         <FadeIn delay={0.04}>
           <header className="mt-8 text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
               Our products
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-slate-600">
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
               High-quality industrial and agricultural equipment for every need.
               Browse the catalog, then inquire on WhatsApp for pricing and
               availability.
@@ -93,18 +117,8 @@ export default async function ProductsPage({ searchParams }: SearchParams) {
           </header>
         </FadeIn>
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,15rem)_1fr] lg:gap-12">
-          <FadeIn delay={0.08} className="lg:sticky lg:top-28 lg:self-start">
-            <aside>
-              <ProductsCategorySidebar
-                nav={catalogNav}
-                activeCategory={activeCategory}
-              />
-              <ProductsHelpBox whatsappHref={whatsappHref} />
-            </aside>
-          </FadeIn>
-
-          <main className="space-y-8">
+        <div className="mt-8 flex flex-col gap-8 lg:mt-12 lg:grid lg:grid-cols-[minmax(0,15rem)_1fr] lg:gap-12">
+          <main className="order-1 min-w-0 space-y-6 lg:order-none lg:col-start-2 lg:space-y-8">
             <ProductSearchBar
               defaultQuery={searchQuery ?? ""}
               category={activeCategory}
@@ -128,7 +142,7 @@ export default async function ProductsPage({ searchParams }: SearchParams) {
               </FadeIn>
             ) : (
               <>
-                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
                   {catalogResult.items.map((product, index) => (
                     <FadeIn key={product._id} delay={0.06 + index * 0.03}>
                       <ProductCatalogCard product={product} />
@@ -145,6 +159,19 @@ export default async function ProductsPage({ searchParams }: SearchParams) {
               </>
             )}
           </main>
+
+          <FadeIn
+            delay={0.08}
+            className="order-2 min-w-0 lg:order-none lg:col-start-1 lg:row-start-1 lg:sticky lg:top-28 lg:self-start"
+          >
+            <aside className="space-y-6 lg:space-y-8">
+              <ProductsCategorySidebar
+                nav={catalogNav}
+                activeCategory={activeCategory}
+              />
+              <ProductsHelpBox whatsappHref={whatsappHref} />
+            </aside>
+          </FadeIn>
         </div>
       </div>
     </div>

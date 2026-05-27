@@ -21,8 +21,8 @@ export function FeaturedProductsSection({
   }
 
   return (
-    <section className="bg-white py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4">
+    <section className="bg-white py-14 sm:py-20 lg:py-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <FadeIn>
           <SectionHeading
             eyebrow="Featured"

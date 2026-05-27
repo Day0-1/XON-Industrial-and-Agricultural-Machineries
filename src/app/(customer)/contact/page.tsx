@@ -4,6 +4,7 @@ import { FadeIn } from "@/components/customer/FadeIn";
 import { ProductBreadcrumbs } from "@/components/customer/products/ProductBreadcrumbs";
 import { LocationMapEmbed } from "@/components/customer/shared/LocationMapEmbed";
 import { StoreLocationsList } from "@/components/customer/shared/StoreLocationsList";
+import { customerPageShellClass } from "@/lib/site/customer-layout";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { getWhatsAppHref } from "@/lib/whatsapp";
 
@@ -19,8 +20,8 @@ export default function ContactPage() {
     "Hello XON, I would like to get in touch.",
   );
   return (
-    <div className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:py-14">
+    <div className="overflow-x-hidden bg-white">
+      <div className={`${customerPageShellClass} min-w-0`}>
         <FadeIn>
           <ProductBreadcrumbs
             items={[
@@ -34,7 +35,7 @@ export default function ContactPage() {
           <h1 className="sr-only">Contact Us</h1>
         </FadeIn>
 
-        <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:mt-10 sm:gap-8 lg:grid-cols-12 lg:gap-10">
           <FadeIn delay={0.06} className="lg:col-span-4">
             <ContactInfoPanel whatsappHref={whatsappHref} />
           </FadeIn>
@@ -44,13 +45,9 @@ export default function ContactPage() {
           </FadeIn>
         </div>
 
-        <FadeIn delay={0.14}>
-          <div className="mt-10 lg:mt-12">
-            <LocationMapEmbed
-              showStoresList={false}
-              minHeightClass="min-h-[320px] sm:min-h-[400px] lg:min-h-[480px]"
-              aspectClass="aspect-[16/10] lg:aspect-[21/9]"
-            />
+        <FadeIn delay={0.14} className="min-w-0">
+          <div className="mt-10 w-full min-w-0 lg:mt-12">
+            <LocationMapEmbed showStoresList={false} />
             <div className="mt-8 border-t border-slate-100 pt-8">
               <p className="text-sm font-semibold text-slate-900">
                 All store addresses

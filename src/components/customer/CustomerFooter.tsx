@@ -1,10 +1,29 @@
+import Image from "next/image";
+import { CustomerLink } from "@/components/customer/CustomerLink";
 import Link from "next/link";
-import { ArrowRight, ArrowUp, Mail, MessageCircle, Phone } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUp,
+  Mail,
+  MessageCircle,
+  Phone,
+} from "lucide-react";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa";
 import { WhatsAppLink } from "@/components/customer/WhatsAppLink";
 import { listActiveCollections } from "@/integrations/mongodb/collections";
 import {
   getContactEmail,
-  getContactPhone,
+  contactPhoneTelHref,
+  formatContactPhone,
+  getContactPhones,
+  getSocialLinks,
+  type SocialLink,
 } from "@/lib/site/contact";
 import { siteConfig } from "@/lib/seo/site";
 import { getWhatsAppHref } from "@/lib/whatsapp";
@@ -63,17 +82,26 @@ function FooterColumn({
       <ul className="mt-4 space-y-2.5">
         {links.map((link) => (
           <li key={`${title}-${link.label}`}>
-            <Link
+            <CustomerLink
               href={link.href}
               className="text-sm text-slate-600 transition-colors hover:text-brand"
             >
               {link.label}
-            </Link>
+            </CustomerLink>
           </li>
         ))}
       </ul>
     </div>
   );
+}
+
+function SocialIcon({ id }: { id: SocialLink["id"] }) {
+  if (id === "facebook") return <FaFacebookF className="h-4 w-4" aria-hidden />;
+  if (id === "linkedin") return <FaLinkedinIn className="h-4 w-4" aria-hidden />;
+  if (id === "instagram") return <FaInstagram className="h-4 w-4" aria-hidden />;
+  if (id === "youtube") return <FaYoutube className="h-4 w-4" aria-hidden />;
+  if (id === "tiktok") return <FaTiktok className="h-4 w-4" aria-hidden />;
+  return null;
 }
 
 export async function CustomerFooter() {
@@ -87,7 +115,8 @@ export async function CustomerFooter() {
   ];
 
   const email = getContactEmail();
-  const phone = getContactPhone();
+  const phones = getContactPhones();
+  const socialLinks = getSocialLinks();
   const whatsappHref = getWhatsAppHref(
     "Hello XON, I would like to get in touch.",
   );
@@ -95,7 +124,7 @@ export async function CustomerFooter() {
 
   return (
     <footer className="border-t border-border bg-white text-slate-800">
-      <div className="mx-auto max-w-7xl px-4 py-14 lg:px-6 lg:py-16">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,2fr)] lg:gap-16">
           <div className="max-w-md">
             <p className="text-2xl font-bold uppercase tracking-widest text-slate-900">
@@ -112,13 +141,13 @@ export async function CustomerFooter() {
               >
                 Chat on WhatsApp
               </WhatsAppLink>
-              <Link
+              <CustomerLink
                 href="/products"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-brand/20 transition-colors hover:bg-brand-light sm:w-auto"
               >
                 View products
                 <ArrowRight className="h-4 w-4" aria-hidden />
-              </Link>
+              </CustomerLink>
               {/* <Link
                 href="/contact"
                 className="inline-flex w-full items-center justify-center rounded-full border-2 border-slate-200 px-5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:border-brand hover:text-brand sm:w-auto"
@@ -128,13 +157,16 @@ export async function CustomerFooter() {
             </div>
 
             <div className="mt-5 flex flex-col gap-2 text-sm text-slate-500 sm:flex-row sm:flex-wrap sm:gap-x-5">
-              <a
-                href={`tel:${phone.replace(/\s/g, "")}`}
-                className="inline-flex items-center gap-2 transition-colors hover:text-brand"
-              >
-                <Phone className="h-4 w-4 shrink-0 text-accent" aria-hidden />
-                {phone}
-              </a>
+              {phones.map((phone) => (
+                <a
+                  key={phone}
+                  href={contactPhoneTelHref(phone)}
+                  className="inline-flex items-center gap-2 transition-colors hover:text-brand"
+                >
+                  <Phone className="h-4 w-4 shrink-0 text-accent" aria-hidden />
+                  {formatContactPhone(phone)}
+                </a>
+              ))}
               <a
                 href={`mailto:${email}`}
                 className="inline-flex items-center gap-2 transition-colors hover:text-brand"
@@ -143,6 +175,29 @@ export async function CustomerFooter() {
                 {email}
               </a>
             </div>
+
+            {socialLinks.length > 0 && (
+              <div className="mt-6">
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+                  Follow us
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.id}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Follow us on ${social.label}`}
+                      className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:border-brand hover:text-brand"
+                    >
+                      <SocialIcon id={social.id} />
+                      {social.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 sm:gap-6">
@@ -170,19 +225,15 @@ export async function CustomerFooter() {
             </a>
           </div>
 
-          <div className="mt-10 text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-900">
-              Need machinery or support?
-            </p>
-            <Link
-              href="/contact"
-              className="mt-3 block text-[clamp(2.75rem,12vw,6.5rem)] font-bold leading-none tracking-tight text-slate-200 transition-colors hover:text-slate-300"
-            >
-              Let&apos;s talk
-            </Link>
-            <p className="mx-auto mt-4 max-w-lg text-sm text-slate-500">
-              {siteConfig.name}
-            </p>
+          <div className="relative mt-10 w-full overflow-hidden">
+            <Image
+              src="/logo.png"
+              alt={siteConfig.shortName}
+              width={1200}
+              height={320}
+              className="mx-auto h-auto w-full max-w-5xl object-contain opacity-20 grayscale"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 90vw, 1200px"
+            />
           </div>
         </div>
 

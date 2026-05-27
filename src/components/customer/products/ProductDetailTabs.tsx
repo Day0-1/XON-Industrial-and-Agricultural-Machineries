@@ -23,13 +23,16 @@ type ProductDetailTabsProps = {
 
 export function ProductDetailTabs({ product }: ProductDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>("description");
-  const features = getProductFeatures(product);
+  const features =
+    product.features.length > 0
+      ? product.features
+      : getProductFeatures(product);
   const specifications = getProductSpecifications(product);
 
   return (
     <div>
       <div
-        className="flex gap-6 border-b border-slate-200"
+        className="-mx-1 flex gap-4 overflow-x-auto border-b border-slate-200 pb-px sm:mx-0 sm:gap-6"
         role="tablist"
         aria-label="Product information"
       >
@@ -40,7 +43,7 @@ export function ProductDetailTabs({ product }: ProductDetailTabsProps) {
             role="tab"
             aria-selected={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`relative pb-3 text-sm font-semibold transition-colors ${
+            className={`relative shrink-0 whitespace-nowrap pb-3 text-xs font-semibold transition-colors sm:text-sm ${
               activeTab === tab.id
                 ? "text-slate-900"
                 : "text-slate-500 hover:text-slate-700"
@@ -67,8 +70,8 @@ export function ProductDetailTabs({ product }: ProductDetailTabsProps) {
               Applications
             </h4>
             <ul className="mt-3 space-y-2">
-              {features.map((feature) => (
-                <li key={feature} className="flex items-start gap-2">
+              {features.map((feature, index) => (
+                <li key={`${feature}-${index}`} className="flex items-start gap-2">
                   <Check
                     className="mt-0.5 h-4 w-4 shrink-0 text-brand"
                     aria-hidden

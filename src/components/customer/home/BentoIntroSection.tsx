@@ -135,7 +135,7 @@ export function BentoIntroSection() {
           <FadeIn delay={0.08} className="lg:col-span-7">
             <BentoCard className="relative min-h-[320px] overflow-hidden p-0 sm:min-h-[380px]">
               <Image
-                src={brandImages.intro}
+                src={"/hero/hero3.jpeg"}
                 alt="Industrial manufacturing and welding"
                 fill
                 className="object-cover"

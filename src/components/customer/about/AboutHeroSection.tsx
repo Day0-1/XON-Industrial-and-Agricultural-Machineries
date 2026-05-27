@@ -9,7 +9,7 @@ export function AboutHeroSection() {
   return (
     <section className="relative overflow-hidden bg-white">
       <div className="mx-auto grid max-w-6xl grid-cols-1 lg:grid-cols-2 lg:min-h-[28rem]">
-        <div className="flex flex-col justify-center px-4 py-16 sm:py-20 lg:px-8 lg:py-24">
+        <div className="flex flex-col justify-center px-4 py-12 sm:py-16 lg:px-8 lg:py-24">
           <FadeIn>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-light">
               About XON
@@ -17,7 +17,7 @@ export function AboutHeroSection() {
             <p className="mt-3 text-base font-semibold italic text-slate-700">
               Motto: {companyMotto}
             </p>
-            <h1 className="mt-4 text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 sm:text-5xl">
+            <h1 className="mt-4 text-3xl font-bold leading-[1.1] tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
               Machinery partners for industry and agriculture
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-slate-600 sm:text-lg">
@@ -43,8 +43,8 @@ export function AboutHeroSection() {
           </FadeIn>
         </div>
 
-        <FadeIn delay={0.08} className="relative px-4 pb-16 lg:px-8 lg:py-16 lg:pb-16">
-          <div className="relative min-h-[280px] overflow-hidden rounded-3xl shadow-[0_12px_48px_-16px_rgba(15,23,42,0.15)] ring-1 ring-slate-200/80 lg:min-h-full">
+        <FadeIn delay={0.08} className="relative px-4 pb-12 sm:pb-16 lg:px-8 lg:py-16 lg:pb-16">
+          <div className="relative min-h-[220px] overflow-hidden rounded-2xl shadow-[0_12px_48px_-16px_rgba(15,23,42,0.15)] ring-1 ring-slate-200/80 sm:min-h-[280px] sm:rounded-3xl lg:min-h-full">
             <Image
               src={aboutImages.hero}
               alt="Industrial machinery supplied by XON"

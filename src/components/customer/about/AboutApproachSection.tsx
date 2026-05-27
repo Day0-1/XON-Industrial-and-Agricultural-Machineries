@@ -44,8 +44,8 @@ export function AboutApproachSection() {
           <FadeIn delay={0.1}>
             <div className="relative aspect-[4/3] overflow-hidden rounded-3xl ring-1 ring-white/10">
               <Image
-                src={aboutImages.field}
-                alt="Agricultural field and crops"
+                src={"/hero/pump1.jpeg"}
+                alt="Water pump"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"

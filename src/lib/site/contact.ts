@@ -1,6 +1,7 @@
 import {
   defaultContactEmail,
   defaultContactPhone,
+  defaultContactPhone2,
 } from "@/lib/site/company";
 
 export function getContactEmail(): string {
@@ -12,11 +13,36 @@ export function getContactPhone(): string {
   return phone && phone.length > 0 ? phone : defaultContactPhone;
 }
 
+export function getContactPhone2(): string {
+  const phone = process.env.CONTACT_PHONE_2?.trim();
+  return phone && phone.length > 0 ? phone : defaultContactPhone2;
+}
+
+/** Primary and secondary business lines (deduplicated). */
+export function getContactPhones(): string[] {
+  const phones = [getContactPhone(), getContactPhone2()];
+  return phones.filter(
+    (phone, index) =>
+      phone.length > 0 && phones.findIndex((p) => p.replace(/\D/g, "") === phone.replace(/\D/g, "")) === index,
+  );
+}
+
+export function contactPhoneTelHref(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.startsWith("0")) {
+    return `tel:+234${digits.slice(1)}`;
+  }
+  return `tel:${phone.replace(/\s/g, "")}`;
+}
+
 /** Human-readable phone for UI (e.g. +234 705 323 6255). */
 export function formatContactPhone(phone: string): string {
   const digits = phone.replace(/\D/g, "");
   if (digits.startsWith("234") && digits.length >= 13) {
     return `+${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6, 9)} ${digits.slice(9)}`;
+  }
+  if (digits.startsWith("0") && digits.length === 11) {
+    return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7)}`;
   }
   return phone;
 }
@@ -81,7 +107,12 @@ export const contactWorkingHours = [
   { label: "Saturday", value: "9:00 AM – 2:00 PM" },
 ] as const;
 
-export type SocialLinkId = "facebook" | "linkedin" | "instagram" | "youtube";
+export type SocialLinkId =
+  | "facebook"
+  | "linkedin"
+  | "instagram"
+  | "youtube"
+  | "tiktok";
 
 export type SocialLink = {
   id: SocialLinkId;
@@ -95,6 +126,7 @@ export function getSocialLinks(): SocialLink[] {
     { id: "linkedin", label: "LinkedIn", envKey: "CONTACT_LINKEDIN_URL" },
     { id: "instagram", label: "Instagram", envKey: "CONTACT_INSTAGRAM_URL" },
     { id: "youtube", label: "YouTube", envKey: "CONTACT_YOUTUBE_URL" },
+    { id: "tiktok", label: "TikTok", envKey: "CONTACT_TIKTOK_URL" },
   ];
 
   return entries

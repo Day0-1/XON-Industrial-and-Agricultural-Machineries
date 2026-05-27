@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { getRootSocialMetadata } from "@/lib/seo/social";
 import { getSiteUrl, siteConfig } from "@/lib/seo/site";
 import "./globals.css";
 
@@ -34,28 +35,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: getSiteUrl(),
   },
-  openGraph: {
-    type: "website",
-    locale: siteConfig.locale,
-    url: getSiteUrl(),
-    siteName: siteConfig.shortName,
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: [
-      {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: siteConfig.name,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: ["/opengraph-image"],
-  },
+  ...getRootSocialMetadata(),
   robots: {
     index: true,
     follow: true,

@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { LoginForm } from "@/components/admin/LoginForm";
+import { AdminAuthLayout } from "@/components/admin/AdminAuthLayout";
+import { adminSuccessClass } from "@/components/admin/AdminFields";
 import { MongoRequired } from "@/components/admin/MongoRequired";
 import { SetupAdminForm } from "@/components/admin/SetupAdminForm";
 import { isMongoConfigured } from "@/integrations/mongodb/client";
@@ -23,39 +25,39 @@ export default async function AdminLoginPage({
     needsSetup = false;
   }
 
+  if (needsSetup) {
+    return (
+      <AdminAuthLayout
+        badge="First-time setup"
+        title="Create admin account"
+        description="Set your dashboard username and password. You will also need the setup code from your environment file."
+      >
+        <SetupAdminForm />
+      </AdminAuthLayout>
+    );
+  }
+
   return (
-    <div className="flex min-h-full flex-1 items-center justify-center bg-zinc-950 px-4">
-      <div className="w-full max-w-sm rounded-lg border border-zinc-800 bg-zinc-900 p-8 text-white">
-        {needsSetup ? (
-          <>
-            <h1 className="text-xl font-semibold">Create admin account</h1>
-            <p className="mt-1 text-sm text-zinc-400">
-              Username, password, and 6-digit OTP are required before saving.
-            </p>
-            <div className="mt-6">
-              <SetupAdminForm />
-            </div>
-          </>
-        ) : (
-          <>
-            <h1 className="text-xl font-semibold">Admin sign in</h1>
-            <p className="mt-1 text-sm text-zinc-400">XON dashboard</p>
-            {params.created === "1" && (
-              <p className="mt-3 rounded-md bg-emerald-950 px-3 py-2 text-sm text-emerald-300">
-                Admin account created. Sign in with your username, password, and
-                OTP.
-              </p>
-            )}
-            <div className="mt-6">
-              <Suspense
-                fallback={<p className="text-sm text-zinc-400">Loading…</p>}
-              >
-                <LoginForm />
-              </Suspense>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+    <AdminAuthLayout
+      badge="Secure access"
+      title="Sign in to admin"
+      description="Enter your credentials, then verify with the one-time code emailed to the admin inbox."
+      footer={
+        params.created === "1" ? (
+          <p className={adminSuccessClass}>
+            Admin account created. Sign in to receive your verification code by
+            email.
+          </p>
+        ) : undefined
+      }
+    >
+      <Suspense
+        fallback={
+          <p className="text-sm text-slate-500">Loading sign-in form…</p>
+        }
+      >
+        <LoginForm />
+      </Suspense>
+    </AdminAuthLayout>
   );
 }

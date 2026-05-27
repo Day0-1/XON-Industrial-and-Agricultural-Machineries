@@ -39,21 +39,27 @@ export default async function AdminDashboardPage() {
         <StatCard
           label="Total clicks"
           value={formatClickCount(stats.totalClicks)}
+          count={stats.totalClicks}
+          useCompactCountFormat
           hint="Customer product page views"
         />
         <StatCard
           label="Products"
           value={String(stats.totalProducts)}
+          count={stats.totalProducts}
           hint={`${stats.activeProducts} live on site`}
         />
         <StatCard
           label="Collections"
           value={String(stats.totalCollections)}
+          count={stats.totalCollections}
           hint="Catalog categories"
         />
         <StatCard
           label="Top product"
           value={formatClickCount(topProductClicks)}
+          count={topProductClicks}
+          useCompactCountFormat
           hint={stats.topProducts[0]?.name ?? "—"}
         />
       </div>

@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
-import { getSiteUrl, siteConfig } from "./site";
+import {
+  defaultSocialImage,
+  getSiteUrl,
+  resolveSiteImageUrl,
+  siteConfig,
+} from "./site";
+import {
+  getDefaultOpenGraphImages,
+  getDefaultTwitterMetadata,
+} from "./social";
 
 type PageMetadataOptions = {
   title?: string;
@@ -7,17 +16,25 @@ type PageMetadataOptions = {
   path?: string;
   image?: string;
   imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   noIndex?: boolean;
 };
 
+function normalizeImage(image?: string): string | undefined {
+  const trimmed = image?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : undefined;
+}
+
 function resolveImageUrl(image?: string): string {
-  if (!image) {
-    return `${getSiteUrl()}/opengraph-image`;
+  const normalized = normalizeImage(image);
+  if (!normalized) {
+    return defaultSocialImage.path;
   }
-  if (image.startsWith("http")) {
-    return image;
+  if (normalized.startsWith("http")) {
+    return normalized;
   }
-  return `${getSiteUrl()}${image.startsWith("/") ? image : `/${image}`}`;
+  return normalized.startsWith("/") ? normalized : `/${normalized}`;
 }
 
 export function buildPageMetadata(options: PageMetadataOptions = {}): Metadata {
@@ -27,15 +44,33 @@ export function buildPageMetadata(options: PageMetadataOptions = {}): Metadata {
     path = "",
     image,
     imageAlt,
+    imageWidth,
+    imageHeight,
     noIndex = false,
   } = options;
 
   const url = `${getSiteUrl()}${path}`;
-  const ogImage = resolveImageUrl(image);
+  const shareImage = normalizeImage(image);
+  const imagePath = resolveImageUrl(shareImage);
   const pageTitle = title ?? siteConfig.name;
   const openGraphTitle = title
     ? `${title} | ${siteConfig.shortName}`
     : siteConfig.name;
+
+  const ogImages = shareImage
+    ? [
+        {
+          url: resolveSiteImageUrl(imagePath),
+          width: imageWidth ?? defaultSocialImage.width,
+          height: imageHeight ?? defaultSocialImage.height,
+          alt: imageAlt ?? openGraphTitle,
+        },
+      ]
+    : getDefaultOpenGraphImages(imageAlt ?? openGraphTitle);
+
+  const twitterImage = shareImage
+    ? resolveSiteImageUrl(imagePath)
+    : defaultSocialImage.path;
 
   return {
     title: title ? title : undefined,
@@ -51,24 +86,13 @@ export function buildPageMetadata(options: PageMetadataOptions = {}): Metadata {
       siteName: siteConfig.shortName,
       title: openGraphTitle,
       description,
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: imageAlt ?? openGraphTitle,
-        },
-      ],
+      images: ogImages,
     },
-    twitter: {
-      card: "summary_large_image",
+    twitter: getDefaultTwitterMetadata({
       title: openGraphTitle,
       description,
-      images: [ogImage],
-      ...(siteConfig.twitterHandle
-        ? { creator: siteConfig.twitterHandle }
-        : {}),
-    },
+      imageUrl: twitterImage,
+    }),
     robots: noIndex
       ? { index: false, follow: false }
       : { index: true, follow: true },

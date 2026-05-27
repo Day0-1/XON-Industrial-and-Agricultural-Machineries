@@ -5,8 +5,8 @@ import { SectionHeading } from "@/components/customer/home/SectionHeading";
 
 export function AboutLocationSection() {
   return (
-    <section className="bg-white py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-4">
+    <section className="overflow-x-hidden bg-white py-20 sm:py-28">
+      <div className="mx-auto w-full min-w-0 max-w-6xl px-4 sm:px-6">
         <FadeIn>
           <SectionHeading
             eyebrow="Where we are"
@@ -15,14 +15,12 @@ export function AboutLocationSection() {
           />
         </FadeIn>
 
-        <FadeIn delay={0.08}>
-          <div className="mt-12">
+        <FadeIn delay={0.08} className="min-w-0">
+          <div className="mt-12 w-full min-w-0">
             <LocationMapEmbed
               title="Our Location"
               showStoresList
               showContactLink
-              minHeightClass="min-h-[360px] sm:min-h-[420px]"
-              aspectClass="aspect-[21/9] sm:aspect-[2.4/1]"
             />
             <p className="mt-6 text-center text-sm text-slate-600">
               Questions about delivery or site visits?{" "}

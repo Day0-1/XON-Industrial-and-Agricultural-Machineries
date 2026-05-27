@@ -26,7 +26,7 @@ export function AboutStorySection() {
           <FadeIn className="lg:col-span-5">
             <div className="relative aspect-[4/5] overflow-hidden rounded-3xl shadow-[0_16px_48px_-20px_rgba(15,23,42,0.25)] ring-1 ring-slate-200/80">
               <Image
-                src={aboutImages.story}
+                src={"hero/hero3.jpeg"}
                 alt="Industrial manufacturing and metalwork"
                 fill
                 className="object-cover"

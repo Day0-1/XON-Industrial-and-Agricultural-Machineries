@@ -1,4 +1,11 @@
 import Link from "next/link";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+
+export const metadata = buildPageMetadata({
+  title: "Product not found",
+  path: "/products",
+  noIndex: true,
+});
 
 export default function ProductNotFound() {
   return (

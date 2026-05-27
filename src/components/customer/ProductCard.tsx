@@ -13,7 +13,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product, emphasized = false }: ProductCardProps) {
   const whatsappHref = getWhatsAppHref(
-    buildProductInquiryMessage(product.name),
+    buildProductInquiryMessage(product.name, product.slug),
   );
 
   return (

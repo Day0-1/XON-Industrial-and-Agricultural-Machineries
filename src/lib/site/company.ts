@@ -11,4 +11,5 @@ export const companyMission =
 export const yearsOfExperience = 28;
 
 export const defaultContactPhone = "+2347053236255";
+export const defaultContactPhone2 = "+2349066028889";
 export const defaultContactEmail = "Xonindust123@gmail.com";

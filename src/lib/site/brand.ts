@@ -1,14 +1,81 @@
 import { yearsOfExperience } from "@/lib/site/company";
+import type { SiteStat } from "@/types/site-stat";
 
 /** Local marketing imagery (files in public/media/). */
 export const brandImages = {
-  hero: "/media/photo-hero.avif",
+  hero: "/hero/hero2.jpeg",
   galleryIndustrial: "/media/photo-industrial.avif",
   galleryAgricultural: "/media/plant-soil.avif",
   intro: "/media/photo-industrial.avif",
   testimonial: "/media/plant-soil.avif",
   whyChooseFeatured: "/media/machine.jpeg",
 } as const;
+
+export type HeroSlide = {
+  src: string;
+  alt: string;
+};
+
+/** Hero background slideshow — public/hero/ plus legacy hero image. */
+export const heroSlides: HeroSlide[] = [
+  {
+    src: "/hero/hero2.jpeg",
+    alt: "Industrial and agricultural machinery",
+  },
+  {
+    src: "/Agricultural_machinery.jpg",
+    alt: "Agricultural machinery in the field",
+  },
+  {
+    src: "/hero/hero3.jpeg",
+    alt: "XON machinery on site",
+  },
+  {
+    src: "/hero/heropumps.jpeg",
+    alt: "Pump and fluid equipment",
+  },
+  {
+    src: "/hero/pump1.jpeg",
+    alt: "Industrial pump equipment",
+  },
+  {
+    src: "/hero/pump2.jpeg",
+    alt: "Pump machinery for commercial use",
+  },
+];
+
+/**
+ * Home featured-category row — fixed labels, images, and catalog slugs.
+ * Create matching collections in admin (same slugs) so /products?category=… filters work.
+ */
+export const homeFeaturedCategories = [
+  {
+    name: "Atlas Copco Compressors",
+    href: "/products?category=atlas-copco-compressors",
+    image: "/media/machine.jpeg",
+  },
+  {
+    name: "Cement Mixing Machines",
+    href: "/products?category=cement-mixing-machines",
+    image: "/media/diesel_site_mixer.png",
+  },
+  {
+    name: "Cranes",
+    href: "/products?category=cranes",
+    image: "/media/industrial-crane-saudi-arabia--560x416.png",
+  },
+  {
+    name: "Diver/Vacuum Pumps",
+    href: "/products?category=diver-vacuum-pumps",
+    image: "/media/Two-Stage-Vacuum-Pump.jpg.bv_resized_mobile.jpg.bv.webp",
+  },
+  {
+    name: "Mining Compressors",
+    href: "/products?category=mining-compressors",
+    image:
+      "/media/Zimbabwe-Gold-Mining-Diesel-Air-Compressor-with-Hand-Rock-Drill.webp",
+  },
+] as const;
 
 /** Fallback image when a collection has no custom artwork. */
 export function getCollectionFeaturedImage(slug: string): string {
@@ -84,11 +151,16 @@ export const processSteps = [
   },
 ] as const;
 
-export const trustStats = [
-  { value: `${yearsOfExperience}+`, label: "Years of Experience" },
-  { value: "2", label: "Sectors Served" },
-  { value: "24/7", label: "Inquiry Support" },
-] as const;
+export const trustStats: SiteStat[] = [
+  {
+    kind: "counter",
+    value: yearsOfExperience,
+    suffix: "+",
+    label: "Years of Experience",
+  },
+  { kind: "counter", value: 2, label: "Sectors Served" },
+  { kind: "static", display: "24/7", label: "Inquiry Support" },
+];
 
 export const heroTrustBar = [
   {

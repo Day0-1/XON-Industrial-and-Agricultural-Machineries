@@ -9,6 +9,10 @@ import {
   normalizeHost,
   toAdminExternalPath,
 } from "@/lib/hosts";
+import {
+  NO_INDEX_ROBOTS_HEADER,
+  shouldNoIndexRequest,
+} from "@/lib/seo/crawl";
 
 async function hasValidSession(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get(getSessionCookieName())?.value;
@@ -18,6 +22,16 @@ async function hasValidSession(request: NextRequest): Promise<boolean> {
 
 function notFound() {
   return new NextResponse(null, { status: 404 });
+}
+
+function withCrawlHeaders(
+  response: NextResponse,
+  request: NextRequest,
+): NextResponse {
+  if (shouldNoIndexRequest(request)) {
+    response.headers.set("X-Robots-Tag", NO_INDEX_ROBOTS_HEADER);
+  }
+  return response;
 }
 
 function isAdminLoginPath(pathname: string): boolean {
@@ -62,8 +76,7 @@ async function requireSession(
   return NextResponse.next();
 }
 
-
-export async function middleware(request: NextRequest) {
+async function runMiddleware(request: NextRequest): Promise<NextResponse> {
   const host = normalizeHost(request.headers.get("host"));
   const { pathname } = request.nextUrl;
 
@@ -144,6 +157,11 @@ export async function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
+}
+
+export async function middleware(request: NextRequest) {
+  const response = await runMiddleware(request);
+  return withCrawlHeaders(response, request);
 }
 
 export const config = {

@@ -1,3 +1,5 @@
+import { getSiteUrl } from "@/lib/seo/site";
+
 function resolveWhatsAppNumber(): string | undefined {
   const raw =
     process.env.WHATSAPP_NUMBER ?? process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
@@ -32,13 +34,47 @@ export function getWhatsAppHref(message: string): string | null {
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
-export function buildProductInquiryMessage(productName: string): string {
-  return `Hello XON, I would like to inquire about: ${productName}`;
+export function buildProductPageUrl(slug: string): string {
+  const base = getSiteUrl().replace(/\/$/, "");
+  return `${base}/products/${slug}`;
+}
+
+export function buildProductInquiryMessage(
+  productName: string,
+  productSlug: string,
+): string {
+  const url = buildProductPageUrl(productSlug);
+  return [
+    "Hello XON, I would like to inquire about:",
+    productName,
+    "",
+    url,
+  ].join("\n");
 }
 
 export function buildProductQuoteMessage(
   productName: string,
   quantity: number,
+  productSlug: string,
 ): string {
-  return `Hello XON, I would like a quote for: ${productName} (quantity: ${quantity})`;
+  const url = buildProductPageUrl(productSlug);
+  return [
+    `Hello XON, I would like a quote for: ${productName} (quantity: ${quantity})`,
+    "",
+    url,
+  ].join("\n");
+}
+
+/** Sidebar / help CTA on a product page */
+export function buildProductPurchaseMessage(
+  productName: string,
+  productSlug: string,
+): string {
+  const url = buildProductPageUrl(productSlug);
+  return [
+    "Hello XON, I would like to purchase:",
+    productName,
+    "",
+    url,
+  ].join("\n");
 }

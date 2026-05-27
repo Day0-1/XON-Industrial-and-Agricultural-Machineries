@@ -1,9 +1,8 @@
 import { jsonError, jsonOk } from "@/lib/api/http";
-import { isMongoConfigured } from "@/integrations/mongodb/client";
-import { parseOtp, verifyLoginOtp } from "@/lib/auth/otp";
-import { verifyPassword } from "@/lib/auth/password";
+import { parseOtp } from "@/lib/auth/otp";
 import { createSession } from "@/lib/auth/session";
-import { findAdminByUsername } from "@/integrations/mongodb/admins";
+import { verifyOtpChallenge } from "@/integrations/mongodb/admin-otp";
+import { isMongoConfigured } from "@/integrations/mongodb/client";
 
 export async function POST(request: Request) {
   if (!isMongoConfigured()) {
@@ -13,31 +12,36 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const username = typeof body.username === "string" ? body.username.trim() : "";
-    const password = typeof body.password === "string" ? body.password : "";
+    const challengeId =
+      typeof body.challengeId === "string" ? body.challengeId.trim() : "";
     const otp = parseOtp(body.otp);
 
-    if (!username || !password) {
-      return jsonError("Username and password are required", 400);
+    if (!username || !challengeId) {
+      return jsonError("Username and verification session are required", 400);
     }
 
     if (!otp) {
-      return jsonError("A valid 6-digit OTP is required", 400);
+      return jsonError("A valid 6-digit code is required", 400);
     }
 
-    if (!verifyLoginOtp(otp)) {
-      return jsonError("Invalid OTP", 401);
-    }
+    const result = await verifyOtpChallenge(challengeId, username, otp);
 
-    const admin = await findAdminByUsername(username);
-    if (!admin || !(await verifyPassword(password, admin.passwordHash))) {
-      return jsonError("Invalid credentials", 401);
+    switch (result) {
+      case "ok":
+        await createSession(username);
+        return jsonOk({ ok: true });
+      case "expired":
+        return jsonError("Verification code expired. Go back and sign in again.", 401);
+      case "too_many_attempts":
+        return jsonError("Too many attempts. Go back and request a new code.", 401);
+      case "invalid":
+        return jsonError("Invalid verification code", 401);
+      default:
+        return jsonError("Verification session not found. Go back and sign in again.", 401);
     }
-
-    await createSession(admin.username);
-    return jsonOk({ ok: true });
   } catch (err) {
     if (process.env.NODE_ENV === "development") {
-      console.error("Login error:", err);
+      console.error("Login verify error:", err);
     }
     return jsonError("Login failed", 500);
   }

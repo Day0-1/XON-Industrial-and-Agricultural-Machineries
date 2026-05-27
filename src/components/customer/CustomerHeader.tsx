@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { CustomerLink } from "@/components/customer/CustomerLink";
 import { usePathname } from "next/navigation";
 import {
   Mail,
@@ -19,7 +19,6 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
   { href: "/products", label: "Products" },
-  { href: "/products", label: "Gallery" },
   { href: "/contact", label: "Contact Us" },
 ] as const;
 
@@ -30,12 +29,19 @@ export type CustomerHeaderProps = {
   location: string;
 };
 
-function Logo({ onNavigate }: { onNavigate?: () => void }) {
+function Logo({
+  onNavigate,
+  prefetchHome,
+}: {
+  onNavigate?: () => void;
+  prefetchHome?: boolean;
+}) {
   return (
-    <Link
+    <CustomerLink
       href="/"
+      prefetch={prefetchHome}
       onClick={onNavigate}
-      className="flex items-center border-r border-slate-200 py-3 pr-4 sm:py-4 sm:pr-6"
+      className="flex items-center border-r border-slate-200 py-2.5 pr-3 sm:py-4 sm:pr-6"
     >
       <Image
         src="/logo.png"
@@ -43,9 +49,10 @@ function Logo({ onNavigate }: { onNavigate?: () => void }) {
         width={180}
         height={64}
         className="h-10 w-auto max-w-[130px] object-contain object-left sm:h-16 sm:max-w-[200px]"
+        style={{ width: "auto", height: "auto" }}
         priority
       />
-    </Link>
+    </CustomerLink>
   );
 }
 
@@ -163,8 +170,8 @@ export function CustomerHeader({
     <header className="fixed top-0 z-50 w-full border-b border-slate-200 bg-white shadow-sm">
       <div className="mx-auto max-w-7xl px-4 lg:px-6">
         <div className="grid grid-cols-[auto_1fr]">
-          <div className="row-span-2">
-            <Logo onNavigate={closeMenu} />
+          <div className="row-span-1 md:row-span-2">
+            <Logo onNavigate={closeMenu} prefetchHome={pathname !== "/"} />
           </div>
 
           {/* Top row: contacts (desktop) + WhatsApp + menu toggle */}
@@ -203,15 +210,16 @@ export function CustomerHeader({
           </div>
 
           {/* Desktop / tablet nav */}
-          <div className="hidden min-h-11 items-stretch justify-end py-2 pl-4 md:flex">
+          <div className="hidden min-h-11 items-stretch justify-end py-2 pl-2 md:flex md:pl-4">
             <div className="hidden items-stretch justify-end   lg:flex">
               <nav className="flex items-center justify-end" aria-label="Main">
                 {navLinks.map((link) => {
                   const active = isNavActive(pathname, link.href, link.label);
                   return (
-                    <Link
+                    <CustomerLink
                       key={link.label}
                       href={link.href}
+                      prefetch={!active}
                       className={`whitespace-nowrap border-r border-slate-200 px-3 py-2.5 text-[11px] font-bold uppercase tracking-widest transition-colors xl:px-4 xl:text-xs ${
                         active
                           ? "text-brand underline decoration-accent decoration-2 underline-offset-[5px]"
@@ -219,17 +227,18 @@ export function CustomerHeader({
                       }`}
                     >
                       {link.label}
-                    </Link>
+                    </CustomerLink>
                   );
                 })}
               </nav>
-              <Link
+              <CustomerLink
                 href="/products"
+                prefetch={pathname !== "/products" && !pathname.startsWith("/products/")}
                 className="flex items-center border-l border-slate-300 px-4 text-slate-600 transition-colors hover:text-brand"
                 aria-label="Search products"
               >
                 <Search className="h-5 w-5" strokeWidth={1.75} aria-hidden />
-              </Link>
+              </CustomerLink>
             </div>
 
             <nav
@@ -239,9 +248,10 @@ export function CustomerHeader({
               {navLinks.map((link) => {
                 const active = isNavActive(pathname, link.href, link.label);
                 return (
-                  <Link
+                  <CustomerLink
                     key={link.label}
                     href={link.href}
+                    prefetch={!active}
                     className={`whitespace-nowrap px-2 py-2 text-[10px] font-bold uppercase tracking-wide ${
                       active
                         ? "text-brand underline decoration-accent"
@@ -249,16 +259,17 @@ export function CustomerHeader({
                     }`}
                   >
                     {link.label}
-                  </Link>
+                  </CustomerLink>
                 );
               })}
-              <Link
+              <CustomerLink
                 href="/products"
+                prefetch={pathname !== "/products" && !pathname.startsWith("/products/")}
                 aria-label="Search products"
                 className="shrink-0 p-2 text-slate-600"
               >
                 <Search className="h-4 w-4" aria-hidden />
-              </Link>
+              </CustomerLink>
             </nav>
           </div>
         </div>
@@ -288,13 +299,14 @@ export function CustomerHeader({
             <ul className="divide-y divide-slate-100">
               {navLinks.map((link) => (
                 <li key={link.label}>
-                  <Link
+                  <CustomerLink
                     href={link.href}
+                    prefetch={!isNavActive(pathname, link.href, link.label)}
                     onClick={closeMenu}
                     className="block py-3 text-sm font-medium text-slate-800"
                   >
                     {link.label}
-                  </Link>
+                  </CustomerLink>
                 </li>
               ))}
             </ul>

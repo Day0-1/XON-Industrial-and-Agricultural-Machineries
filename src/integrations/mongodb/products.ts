@@ -78,6 +78,12 @@ function resolveImages(doc: ProductDocument): ProductImage[] {
   return [];
 }
 
+function toIsoString(value: Date | string | undefined): string {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === "string" && value.length > 0) return value;
+  return new Date().toISOString();
+}
+
 async function toProduct(doc: WithId<ProductDocument>): Promise<Product | null> {
   const meta = await resolveCollectionMeta(doc);
   if (!meta) return null;
@@ -87,21 +93,21 @@ async function toProduct(doc: WithId<ProductDocument>): Promise<Product | null> 
 
   return {
     _id: doc._id.toString(),
-    name: doc.name,
+    name: doc.name ?? "Untitled product",
     slug: doc.slug,
-    description: doc.description,
+    description: doc.description ?? "",
     collectionId: meta.collectionId,
     collectionName: meta.collectionName,
     collectionSlug: meta.collectionSlug,
     images,
-    imageUrl: primary?.imageUrl ?? doc.imageUrl,
-    cloudinaryPublicId: primary?.cloudinaryPublicId ?? doc.cloudinaryPublicId,
-    featured: doc.featured,
-    active: doc.active,
+    imageUrl: primary?.imageUrl ?? doc.imageUrl ?? "",
+    cloudinaryPublicId: primary?.cloudinaryPublicId ?? doc.cloudinaryPublicId ?? "",
+    featured: Boolean(doc.featured),
+    active: doc.active !== false,
     clickCount: typeof doc.clickCount === "number" ? doc.clickCount : 0,
     features: doc.features ?? [],
-    createdAt: doc.createdAt.toISOString(),
-    updatedAt: doc.updatedAt.toISOString(),
+    createdAt: toIsoString(doc.createdAt),
+    updatedAt: toIsoString(doc.updatedAt),
   };
 }
 
@@ -281,18 +287,28 @@ async function backfillProductImagesIfNeeded(
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   if (!isMongoConfigured()) return null;
-  const raw = await (await collection()).findOne({ slug, active: true });
-  if (!raw) return null;
-  const doc = await backfillProductImagesIfNeeded(raw);
-  return toProduct(doc);
+
+  try {
+    const raw = await (await collection()).findOne({ slug, active: true });
+    if (!raw) return null;
+    const doc = await backfillProductImagesIfNeeded(raw);
+    return toProduct(doc);
+  } catch {
+    return null;
+  }
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
   if (!ObjectId.isValid(id)) return null;
-  const raw = await (await collection()).findOne({ _id: new ObjectId(id) });
-  if (!raw) return null;
-  const doc = await backfillProductImagesIfNeeded(raw);
-  return toProduct(doc);
+
+  try {
+    const raw = await (await collection()).findOne({ _id: new ObjectId(id) });
+    if (!raw) return null;
+    const doc = await backfillProductImagesIfNeeded(raw);
+    return toProduct(doc);
+  } catch {
+    return null;
+  }
 }
 
 async function ensureUniqueSlug(base: string, excludeId?: string): Promise<string> {

@@ -1,3 +1,6 @@
+"use client";
+
+import { AnimatedCounter } from "@/components/shared/AnimatedCounter";
 import { formatClickCount, formatClickCountFull } from "@/lib/admin/format";
 
 type ClicksGaugeCardProps = {
@@ -17,17 +20,28 @@ export function ClicksGaugeCard({
   return (
     <div className="flex h-full flex-col rounded-[28px] bg-white p-6 shadow-[0_8px_40px_-12px_rgba(15,23,42,0.08)]">
       <p className="text-sm font-medium text-slate-500">Engagement goal</p>
-      <p className="mt-1 text-lg font-bold text-slate-900">{percent}% of target</p>
+      <p className="mt-1 text-lg font-bold text-slate-900">
+        <AnimatedCounter
+          value={percent}
+          suffix="% of target"
+          duration={1.2}
+          className="inline"
+        />
+      </p>
 
       <div className="relative mx-auto mt-6 flex h-40 w-40 items-center justify-center">
         <div
-          className="absolute inset-0 rounded-full"
+          className="absolute inset-0 rounded-full transition-[background] duration-1000"
           style={{
             background: `conic-gradient(#0f172a ${percent * 3.6}deg, #e2e8f0 ${percent * 3.6}deg)`,
           }}
         />
         <div className="absolute inset-[10px] flex flex-col items-center justify-center rounded-full bg-white">
-          <span className="text-3xl font-bold text-slate-900">{percent}%</span>
+          <AnimatedCounter
+            value={percent}
+            suffix="%"
+            className="text-3xl font-bold text-slate-900"
+          />
           <span className="text-xs text-slate-500">clicks goal</span>
         </div>
       </div>
@@ -35,23 +49,33 @@ export function ClicksGaugeCard({
       <div className="mt-6 grid grid-cols-2 gap-3">
         <div className="rounded-2xl bg-slate-50 p-3">
           <p className="text-xs text-slate-500">Total clicks</p>
-          <p className="mt-1 text-lg font-bold text-slate-900">
-            {formatClickCount(totalClicks)}
-          </p>
+          <AnimatedCounter
+            value={totalClicks}
+            format={(n) => formatClickCount(Math.round(n))}
+            className="mt-1 block text-lg font-bold text-slate-900"
+          />
           <p className="text-[10px] text-slate-400">
             {formatClickCountFull(totalClicks)}
           </p>
         </div>
         <div className="rounded-2xl bg-slate-50 p-3">
           <p className="text-xs text-slate-500">Live products</p>
-          <p className="mt-1 text-lg font-bold text-slate-900">{activeProducts}</p>
+          <AnimatedCounter
+            value={activeProducts}
+            className="mt-1 block text-lg font-bold text-slate-900"
+          />
         </div>
       </div>
 
       <div className="mt-4 rounded-2xl bg-slate-900 px-4 py-3 text-white">
         <p className="text-xs font-medium text-slate-300">Top product</p>
         <p className="mt-1 text-sm font-semibold">
-          {formatClickCount(topProductClicks)} clicks
+          <AnimatedCounter
+            value={topProductClicks}
+            format={(n) => formatClickCount(Math.round(n))}
+            className="inline"
+          />{" "}
+          clicks
         </p>
       </div>
     </div>

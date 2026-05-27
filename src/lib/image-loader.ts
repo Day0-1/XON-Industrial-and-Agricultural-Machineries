@@ -57,8 +57,13 @@ export default function imageLoader({
   width,
   quality = 75,
 }: LoaderProps): string {
-  if (src.startsWith("/") || src.startsWith("data:") || src.startsWith("blob:")) {
+  if (src.startsWith("data:") || src.startsWith("blob:")) {
     return src;
+  }
+
+  if (src.startsWith("/")) {
+    const separator = src.includes("?") ? "&" : "?";
+    return `${src}${separator}w=${width}`;
   }
 
   if (src.includes(CLOUDINARY_HOST)) {

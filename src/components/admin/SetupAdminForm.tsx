@@ -2,6 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  AdminInput,
+  adminButtonPrimaryClass,
+  adminErrorClass,
+  adminLabelClass,
+} from "@/components/admin/AdminFields";
+import { OtpSixInput } from "@/components/admin/OtpSixInput";
 
 export function SetupAdminForm() {
   const router = useRouter();
@@ -42,70 +49,68 @@ export function SetupAdminForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-      {error && (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
-          {error}
-        </p>
-      )}
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {error && <p className={adminErrorClass}>{error}</p>}
+
       <div>
-        <label className="mb-1 block text-sm font-medium">Username</label>
-        <input
+        <label className={adminLabelClass} htmlFor="setup-username">
+          Username
+        </label>
+        <AdminInput
+          id="setup-username"
           required
           autoComplete="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
         />
       </div>
+
       <div>
-        <label className="mb-1 block text-sm font-medium">Password</label>
-        <input
+        <label className={adminLabelClass} htmlFor="setup-password">
+          Password
+        </label>
+        <AdminInput
+          id="setup-password"
           required
           type="password"
           minLength={8}
           autoComplete="new-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
         />
       </div>
+
       <div>
-        <label className="mb-1 block text-sm font-medium">Confirm password</label>
-        <input
+        <label className={adminLabelClass} htmlFor="setup-confirm">
+          Confirm password
+        </label>
+        <AdminInput
+          id="setup-confirm"
           required
           type="password"
           minLength={8}
           autoComplete="new-password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2"
         />
       </div>
+
       <div>
-        <label className="mb-1 block text-sm font-medium">6-digit OTP</label>
-        <p className="mb-2 text-xs text-zinc-500">
-          Enter the setup OTP provided for this project before saving the admin
-          account.
+        <label className={adminLabelClass}>Setup verification code</label>
+        <p className="mb-3 text-xs leading-relaxed text-slate-500">
+          Enter the 6-digit setup code from{" "}
+          <span className="font-medium text-slate-700">ADMIN_SETUP_OTP</span> in
+          your environment file.
         </p>
-        <input
-          required
-          inputMode="numeric"
-          pattern="\d{6}"
-          maxLength={6}
-          autoComplete="one-time-code"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 tracking-widest"
-          placeholder="000000"
-        />
+        <OtpSixInput value={otp} onChange={setOtp} disabled={loading} />
       </div>
+
       <button
         type="submit"
         disabled={loading || otp.length !== 6}
-        className="w-full rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+        className={`w-full ${adminButtonPrimaryClass}`}
       >
-        {loading ? "Saving…" : "Create admin account"}
+        {loading ? "Creating account…" : "Create admin account"}
       </button>
     </form>
   );

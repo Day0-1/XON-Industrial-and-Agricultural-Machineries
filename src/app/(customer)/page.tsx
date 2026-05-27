@@ -1,14 +1,17 @@
-import { CtaSection } from "@/components/customer/home/CtaSection";
+import { AboutCtaSection } from "@/components/customer/about/AboutCtaSection";
 import { FaqSection } from "@/components/customer/home/FaqSection";
 import { FeaturedProductsSection } from "@/components/customer/home/FeaturedProductsSection";
 import { HeroSection } from "@/components/customer/home/HeroSection";
+import { PartnerLogoMarquee } from "@/components/customer/PartnerLogoMarquee";
 import { BentoIntroSection } from "@/components/customer/home/BentoIntroSection";
 import { ProcessSection } from "@/components/customer/home/ProcessSection";
+import { TestimonialsSection } from "@/components/customer/home/TestimonialsSection";
 import { TrustSection } from "@/components/customer/home/TrustSection";
 import { WhyChooseSection } from "@/components/customer/home/WhyChooseSection";
-import { listActiveCollections } from "@/integrations/mongodb/collections";
-import { getCollectionFeaturedImage } from "@/lib/site/brand";
+import { homeFeaturedCategories } from "@/lib/site/brand";
+import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import { buildPageMetadata } from "@/lib/seo/metadata";
+import { siteFaqs } from "@/lib/site/faq";
 import { getWhatsAppHref } from "@/lib/whatsapp";
 
 export const metadata = buildPageMetadata({
@@ -22,23 +25,19 @@ export default async function HomePage() {
   const whatsappHref = getWhatsAppHref(
     "Hello XON, I would like to inquire about your machineries.",
   );
-  const collections = await listActiveCollections();
-  const featuredCategories = collections.slice(0, 5).map((col) => ({
-    name: col.name,
-    href: `/products?category=${col.slug}`,
-    image: getCollectionFeaturedImage(col.slug),
-  }));
-
   return (
     <>
+      <FaqJsonLd faqs={siteFaqs} />
       <HeroSection whatsappHref={whatsappHref} />
+      <PartnerLogoMarquee />
       <BentoIntroSection />
-      <FeaturedProductsSection categories={featuredCategories} />
+      <FeaturedProductsSection categories={[...homeFeaturedCategories]} />
       <WhyChooseSection />
       <ProcessSection />
       <TrustSection />
+      <TestimonialsSection />
       <FaqSection />
-      <CtaSection whatsappHref={whatsappHref} />
+      <AboutCtaSection whatsappHref={whatsappHref} />
     </>
   );
 }

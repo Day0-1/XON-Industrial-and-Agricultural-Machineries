@@ -3,6 +3,8 @@
 **Status:** Implemented (host middleware + `(admin)/admin` routes)  
 **Constraints:** 1 GB RAM, single Node.js process, cPanel + Cloudflare, admin cloaked on apex domain
 
+**Recommended GO54 upload:** [DEPLOY_STANDALONE.md](./DEPLOY_STANDALONE.md) — `output: "standalone"`, build locally, zip `.next/standalone/` (+ `public` + static).
+
 ---
 
 ## 1. Infrastructure decision

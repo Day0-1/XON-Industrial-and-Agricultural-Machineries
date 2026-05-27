@@ -3,6 +3,7 @@ import { AboutLocationSection } from "@/components/customer/about/AboutLocationS
 import { AboutCtaSection } from "@/components/customer/about/AboutCtaSection";
 import { AboutFocusSection } from "@/components/customer/about/AboutFocusSection";
 import { AboutHeroSection } from "@/components/customer/about/AboutHeroSection";
+import { PartnerLogoMarquee } from "@/components/customer/PartnerLogoMarquee";
 import { AboutStatsSection } from "@/components/customer/about/AboutStatsSection";
 import { AboutStorySection } from "@/components/customer/about/AboutStorySection";
 import { AboutValuesSection } from "@/components/customer/about/AboutValuesSection";
@@ -24,6 +25,7 @@ export default function AboutPage() {
   return (
     <>
       <AboutHeroSection />
+      <PartnerLogoMarquee showHeading />
       <AboutStatsSection />
       <AboutStorySection />
       <AboutFocusSection />

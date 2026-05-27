@@ -12,6 +12,14 @@ export const adminButtonPrimaryClass =
 export const adminButtonSecondaryClass =
   "rounded-2xl bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200";
 
+export const adminLabelClass = "mb-2 block text-sm font-medium text-slate-700";
+
+export const adminErrorClass =
+  "rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100";
+
+export const adminSuccessClass =
+  "rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800 ring-1 ring-emerald-100";
+
 type AdminInputProps = InputHTMLAttributes<HTMLInputElement>;
 
 export function AdminInput({ className = "", ...props }: AdminInputProps) {

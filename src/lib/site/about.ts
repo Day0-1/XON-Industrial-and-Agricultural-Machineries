@@ -1,5 +1,6 @@
 import { brandImages } from "@/lib/site/brand";
 import { yearsOfExperience } from "@/lib/site/company";
+import type { SiteStat } from "@/types/site-stat";
 
 export {
   companyMission,
@@ -16,12 +17,17 @@ export const aboutImages = {
   workshop: brandImages.hero,
 } as const;
 
-export const aboutStats = [
-  { value: `${yearsOfExperience}+`, label: "Years of experience" },
-  { value: "2", label: "Core sectors served" },
-  { value: "NG", label: "Serving Nigeria" },
-  { value: "24/7", label: "Inquiry support" },
-] as const;
+export const aboutStats: SiteStat[] = [
+  {
+    kind: "counter",
+    value: yearsOfExperience,
+    suffix: "+",
+    label: "Years of experience",
+  },
+  { kind: "counter", value: 2, label: "Core sectors served" },
+  { kind: "static", display: "NG", label: "Serving Nigeria" },
+  { kind: "static", display: "24/7", label: "Inquiry support" },
+];
 
 export const aboutTagline = `With ${yearsOfExperience} years of experience, XON supplies industrial and agricultural machinery across Nigeria—with direct support from inquiry through delivery.`;
 

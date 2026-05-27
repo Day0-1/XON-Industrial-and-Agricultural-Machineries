@@ -1,10 +1,26 @@
-import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import {
+  Clock,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+} from "lucide-react";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa";
 import { storeLocations } from "@/lib/site/contact";
 import {
+  contactPhoneTelHref,
   contactWorkingHours,
   formatContactPhone,
   getContactEmail,
-  getContactPhone,
+  getContactPhones,
+  getSocialLinks,
+  type SocialLink,
 } from "@/lib/site/contact";
 
 type ContactInfoPanelProps = {
@@ -13,11 +29,19 @@ type ContactInfoPanelProps = {
 
 const panelClass = "flex h-full flex-col rounded-2xl bg-white p-6 sm:p-8";
 
+function SocialIcon({ id }: { id: SocialLink["id"] }) {
+  if (id === "facebook") return <FaFacebookF className="h-4 w-4" aria-hidden />;
+  if (id === "linkedin") return <FaLinkedinIn className="h-4 w-4" aria-hidden />;
+  if (id === "instagram") return <FaInstagram className="h-4 w-4" aria-hidden />;
+  if (id === "youtube") return <FaYoutube className="h-4 w-4" aria-hidden />;
+  if (id === "tiktok") return <FaTiktok className="h-4 w-4" aria-hidden />;
+  return null;
+}
+
 export function ContactInfoPanel({ whatsappHref }: ContactInfoPanelProps) {
   const email = getContactEmail();
-  const phone = getContactPhone();
-  const phoneDisplay = formatContactPhone(phone);
-  const phoneHref = `tel:${phone.replace(/\s/g, "")}`;
+  const phones = getContactPhones();
+  const socialLinks = getSocialLinks();
 
   return (
     <div className={panelClass}>
@@ -48,12 +72,17 @@ export function ContactInfoPanel({ whatsappHref }: ContactInfoPanelProps) {
           </span>
           <div>
             <p className="text-sm font-semibold text-slate-900">Phone</p>
-            <a
-              href={phoneHref}
-              className="mt-1 block text-sm text-slate-600 transition-colors hover:text-brand"
-            >
-              {phoneDisplay}
-            </a>
+            <div className="mt-1 flex flex-col gap-1">
+              {phones.map((phone) => (
+                <a
+                  key={phone}
+                  href={contactPhoneTelHref(phone)}
+                  className="text-sm text-slate-600 transition-colors hover:text-brand"
+                >
+                  {formatContactPhone(phone)}
+                </a>
+              ))}
+            </div>
           </div>
         </li>
 
@@ -105,6 +134,26 @@ export function ContactInfoPanel({ whatsappHref }: ContactInfoPanelProps) {
             <MessageCircle className="h-4 w-4 shrink-0" aria-hidden />
             Chat on WhatsApp
           </a>
+        </div>
+      )}
+
+      {socialLinks.length > 0 && (
+        <div className="mt-5">
+          <p className="text-sm font-semibold text-slate-900">Follow us</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {socialLinks.map((social) => (
+              <a
+                key={social.id}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:border-brand hover:text-brand"
+              >
+                <SocialIcon id={social.id} />
+                {social.label}
+              </a>
+            ))}
+          </div>
         </div>
       )}
     </div>
