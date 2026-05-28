@@ -1,6 +1,7 @@
 import { AboutCtaSection } from "@/components/customer/about/AboutCtaSection";
 import { FaqSection } from "@/components/customer/home/FaqSection";
 import { FeaturedProductsSection } from "@/components/customer/home/FeaturedProductsSection";
+import { HotPicksSection } from "@/components/customer/home/HotPicksSection";
 import { HeroSection } from "@/components/customer/home/HeroSection";
 import { PartnerLogoMarquee } from "@/components/customer/PartnerLogoMarquee";
 import { BentoIntroSection } from "@/components/customer/home/BentoIntroSection";
@@ -8,6 +9,7 @@ import { ProcessSection } from "@/components/customer/home/ProcessSection";
 import { TestimonialsSection } from "@/components/customer/home/TestimonialsSection";
 import { TrustSection } from "@/components/customer/home/TrustSection";
 import { WhyChooseSection } from "@/components/customer/home/WhyChooseSection";
+import { listActiveHotPicks } from "@/integrations/mongodb/hot-picks";
 import { homeFeaturedCategories } from "@/lib/site/brand";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import { buildPageMetadata } from "@/lib/seo/metadata";
@@ -25,6 +27,8 @@ export default async function HomePage() {
   const whatsappHref = getWhatsAppHref(
     "Hello XON, I would like to inquire about your machineries.",
   );
+  const hotPicks = await listActiveHotPicks();
+
   return (
     <>
       <FaqJsonLd faqs={siteFaqs} />
@@ -32,6 +36,7 @@ export default async function HomePage() {
       <PartnerLogoMarquee />
       <BentoIntroSection />
       <FeaturedProductsSection categories={[...homeFeaturedCategories]} />
+      <HotPicksSection picks={hotPicks} />
       <WhyChooseSection />
       <ProcessSection />
       <TrustSection />

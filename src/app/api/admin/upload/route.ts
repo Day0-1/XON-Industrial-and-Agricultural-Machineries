@@ -1,5 +1,8 @@
 import { jsonError, jsonOk, requireAdmin } from "@/lib/api/http";
-import { uploadProductImage } from "@/integrations/cloudinary/upload";
+import {
+  uploadHotPickImage,
+  uploadProductImage,
+} from "@/integrations/cloudinary/upload";
 
 export async function POST(request: Request) {
   const unauthorized = await requireAdmin();
@@ -8,13 +11,17 @@ export async function POST(request: Request) {
   try {
     const form = await request.formData();
     const file = form.get("file");
+    const purpose = form.get("purpose");
 
     if (!file || !(file instanceof File)) {
       return jsonError("Image file is required", 400);
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const result = await uploadProductImage(buffer, file.name);
+    const result =
+      purpose === "hot-pick"
+        ? await uploadHotPickImage(buffer, file.name)
+        : await uploadProductImage(buffer, file.name);
 
     return jsonOk({
       imageUrl: result.url,

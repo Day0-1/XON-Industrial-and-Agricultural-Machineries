@@ -7,7 +7,8 @@ type UploadResult = {
   url: string;
 };
 
-const UPLOAD_FOLDER = "xon/products";
+const PRODUCT_FOLDER = "xon/products";
+const HOT_PICK_FOLDER = "xon/hot-picks";
 
 function signParams(params: Record<string, string>, apiSecret: string): string {
   const payload = Object.keys(params)
@@ -17,19 +18,20 @@ function signParams(params: Record<string, string>, apiSecret: string): string {
   return crypto.createHash("sha1").update(`${payload}${apiSecret}`).digest("hex");
 }
 
-export async function uploadProductImage(
+export async function uploadCloudinaryImage(
   buffer: Buffer,
   filename: string,
+  folder: string,
 ): Promise<UploadResult> {
   const { apiKey, apiSecret } = getCloudinaryConfig();
   const client = getCloudinaryClient();
   const timestamp = String(Math.floor(Date.now() / 1000));
-  const params = { folder: UPLOAD_FOLDER, timestamp };
+  const params = { folder, timestamp };
   const signature = signParams(params, apiSecret);
 
   const form = new FormData();
   form.append("file", new Blob([new Uint8Array(buffer)]), filename);
-  form.append("folder", UPLOAD_FOLDER);
+  form.append("folder", folder);
   form.append("timestamp", timestamp);
   form.append("signature", signature);
   form.append("api_key", apiKey);
@@ -43,6 +45,20 @@ export async function uploadProductImage(
     publicId: data.public_id,
     url: data.secure_url,
   };
+}
+
+export async function uploadProductImage(
+  buffer: Buffer,
+  filename: string,
+): Promise<UploadResult> {
+  return uploadCloudinaryImage(buffer, filename, PRODUCT_FOLDER);
+}
+
+export async function uploadHotPickImage(
+  buffer: Buffer,
+  filename: string,
+): Promise<UploadResult> {
+  return uploadCloudinaryImage(buffer, filename, HOT_PICK_FOLDER);
 }
 
 export async function deleteCloudinaryImage(publicId: string): Promise<void> {

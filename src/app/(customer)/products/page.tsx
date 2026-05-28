@@ -2,11 +2,13 @@ import { ProductBreadcrumbs } from "@/components/customer/products/ProductBreadc
 import { ProductCatalogCard } from "@/components/customer/products/ProductCatalogCard";
 import { ProductsCategorySidebar } from "@/components/customer/products/ProductsCategorySidebar";
 import { ProductsHelpBox } from "@/components/customer/products/ProductsHelpBox";
+import { HotPicksCarousel } from "@/components/customer/home/HotPicksCarousel";
 import { FadeIn } from "@/components/customer/FadeIn";
 import { ListPagination } from "@/components/shared/ListPagination";
 import { ProductSearchBar } from "@/components/shared/ProductSearchBar";
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd";
 import { listActiveCollections } from "@/integrations/mongodb/collections";
+import { listActiveHotPicks } from "@/integrations/mongodb/hot-picks";
 import { listActiveProductsPaginated } from "@/integrations/mongodb/products";
 import {
   buildCatalogNav,
@@ -66,6 +68,7 @@ export default async function ProductsPage({ searchParams }: SearchParams) {
 
   const catalogNav = buildCatalogNav(collections);
   const activeCollection = collections.find((col) => col.slug === activeCategory);
+  const hotPicks = await listActiveHotPicks();
 
   const whatsappHref = getWhatsAppHref(
     "Hello XON, I need help choosing the right product from your catalog.",
@@ -124,6 +127,20 @@ export default async function ProductsPage({ searchParams }: SearchParams) {
               category={activeCategory}
               clearHref={searchQuery ? clearSearchHref : undefined}
             />
+
+            <FadeIn delay={0.06}>
+              <div className="rounded-3xl border border-slate-100 bg-surface/50 p-3 sm:p-4">
+                <p className="px-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-light">
+                  Hot picks
+                </p>
+                <p className="px-2 pt-1 text-sm text-slate-600">
+                  Latest machinery highlights and announcements.
+                </p>
+                <div className="mt-3">
+                  <HotPicksCarousel picks={hotPicks} />
+                </div>
+              </div>
+            </FadeIn>
 
             {catalogResult.items.length === 0 ? (
               <FadeIn>

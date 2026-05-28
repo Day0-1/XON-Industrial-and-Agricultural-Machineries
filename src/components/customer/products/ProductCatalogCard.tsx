@@ -22,7 +22,7 @@ export function ProductCatalogCard({ product }: ProductCatalogCardProps) {
         <p className="text-xs font-semibold uppercase tracking-wide text-brand-light">
           {product.collectionName}
         </p>
-        <h3 className="mt-1 text-lg font-bold leading-snug text-slate-900">
+        <h3 className="mt-1 truncate text-lg font-bold leading-snug text-slate-900">
           {product.name}
         </h3>
         <Link

@@ -23,6 +23,9 @@ import {
 
 type Params = { params: Promise<{ slug: string }> };
 
+// Avoid stale product/not-found responses when catalog updates frequently.
+export const revalidate = 0;
+
 function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength - 1).trim()}…`;

@@ -3,6 +3,9 @@ import { getProductBySlug } from "@/integrations/mongodb/products";
 
 type Params = { params: Promise<{ slug: string }> };
 
+// Keep API reads fresh so clients don't receive cached 404/product responses.
+export const revalidate = 0;
+
 export async function GET(_request: Request, { params }: Params) {
   try {
     const { slug } = await params;

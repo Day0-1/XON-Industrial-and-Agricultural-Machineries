@@ -85,6 +85,7 @@ NODE_OPTIONS=--max-old-space-size=400
 
 APEX_HOST=yourdomain.com
 ADMIN_HOST=admin.yourdomain.com
+SITE_URL=https://yourdomain.com
 
 MONGODB_URI=...
 MONGODB_DB_NAME=xon
@@ -108,7 +109,7 @@ EMAILJS_OTP_TEMPLATE_ID=...
 EMAILJS_PRIVATE_KEY=...
 ```
 
-`NEXT_PUBLIC_SITE_URL` should already match production if you set it before build. If you change domain later, **rebuild** and re-upload.
+Set `SITE_URL` at runtime so sitemap and WhatsApp product links use your domain (even if the build had `localhost`). For a permanent fix in client bundles too, set `NEXT_PUBLIC_SITE_URL` **before** `npm run build`, or change domain later and **rebuild**.
 
 Restart the Node app after saving env vars.
 
@@ -165,7 +166,7 @@ Uses the root `server.js` in development. Standalone output is for **production 
 | 502 / app won’t start | Wrong app root, `PORT` mismatch, or Node not restarted |
 | CSS/JS 404, broken styling | Forgot to copy `.next/static` into `standalone/.next/static` |
 | Images/fonts 404 | Forgot to copy `public/` into `standalone/public/` |
-| SEO links show `localhost` | Rebuild with correct `NEXT_PUBLIC_SITE_URL` |
+| SEO links show `localhost` | Set `SITE_URL=https://yourdomain.com` in cPanel (or `APEX_HOST` if not localhost), restart app; or rebuild with `NEXT_PUBLIC_SITE_URL` |
 | Admin on apex works | Set `APEX_HOST` and `ADMIN_HOST` in cPanel |
 | Build fails on PC | Fix errors locally; don’t upload partial `.next` |
 | Runtime error after Windows build | Rebuild on **WSL** (Linux) and re-upload |

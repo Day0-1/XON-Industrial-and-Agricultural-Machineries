@@ -6,6 +6,7 @@ import {
   FolderOpen,
   LayoutDashboard,
   LogOut,
+  Megaphone,
   Package,
   ExternalLink,
   X,
@@ -15,6 +16,7 @@ const menuItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/products", label: "Products", icon: Package },
   { href: "/collections", label: "Collections", icon: FolderOpen },
+  { href: "/hot-picks", label: "Hot picks", icon: Megaphone },
 ] as const;
 
 type AdminSidebarProps = {
